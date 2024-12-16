@@ -7,12 +7,12 @@
 
 # call apidoc.js from proxmox, the apidoc.js contains the schema of the api
 # this is the point to start at :)
-$apiDescriptionJs = Invoke-WebRequest -Uri "https://pve.proxmox.com/pve-docs/api-viewer/apidoc.js" -ContentType "text/javascript"
+$ApiDescriptionJs = Invoke-WebRequest -Uri "https://pve.proxmox.com/pve-docs/api-viewer/apidoc.js" -ContentType "text/javascript"
 # damn dirty things :) let's get the json content from variable declaration, I hope proxmox won't change this.
-$apiSchema = $apiDescriptionJs.Content[18..($apiDescriptionJs.Content.IndexOf("let method2cmd = {") - 4)] -join '' | ConvertFrom-Json
+$ApiSchema = $ApiDescriptionJs.Content[18..($ApiDescriptionJs.Content.IndexOf("let method2cmd = {") - 4)] -join '' | ConvertFrom-Json
 
 # creating mapping table for operationId, what will be used to render the modules
-$operationsMappingTable = @{
+$OperationsMappingTable = @{
     GET    = "get"
     PUT    = "set"
     POST   = "new"
@@ -34,11 +34,11 @@ function Get-AllPathsRecursiveFromSchema {
     # check if there are children
     if ($Schema.children) {
         # iterate through them
-        foreach ($child in $Schema.children) {
+        foreach ($Child in $Schema.children) {
             # call the function again to go into recursion for all childs
-            $childPaths = Get-AllPathsRecursiveFromSchema -Schema $child
+            $ChildPaths = Get-AllPathsRecursiveFromSchema -Schema $Child
             # add them to the PathList
-            [void]$PathList.AddRange([array]$childPaths)
+            [void]$PathList.AddRange([array]$ChildPaths)
         }
     }
     # return the path list
@@ -57,7 +57,7 @@ function Get-PathObjectFromSchema {
 
     # create the path object foreach
     # iterate through the note properties
-    foreach ($info in ($Schema.info | Get-Member -MemberType NoteProperty).Name) {
+    foreach ($Info in ($Schema.info | Get-Member -MemberType NoteProperty).Name) {
         $OperationObject = [PSCustomObject]@{
             tags         = $Schema.path.Split('/')[0]
             description  = $Schema.info.($info).description
@@ -75,21 +75,30 @@ function New-OpenApiPathItemObject() {
         [Object[]]
         $Schema
     )
+    # creating path item object with summary
     $PathItemObject = [PSCustomObject]@{
+        # setting summary to text
+        # TODO: improve summary
+        # $Schema.text only contains the last part of the path e.g. hardware, firewall, {vmid} or {name}...
         summary = ($Schema.text  -replace "{|}|_","")
     }
-    foreach ($method in (Get-Member -MemberType NoteProperty -InputObject $Schema.info).Name) {
-        $AddObject = [PSCustomObject]@{
-            description = $Schema.info.($method).description
-            operationId = $Schema.info.($method).name
+    # iteratiing through the methods and build the operation objects
+    # https://swagger.io/specification/#operation-object
+    foreach ($Method in (Get-Member -MemberType NoteProperty -InputObject $Schema.info).Name) {
+        $OperationObject = [PSCustomObject]@{
+            description = $Schema.info.($Method).description
+            operationId = $Schema.info.($Method).name
         }
-        $PathItemObject | Add-Member -MemberType NoteProperty -Name $method.ToLower() -Value $AddObject
+        # add each operation object to the path item object
+        $PathItemObject | Add-Member -MemberType NoteProperty -Name $Method.ToLower() -Value $OperationObject
     }
+    # return the object
     $PathItemObject
 }
 
 # putting all recursive paths into a flat list
 $AllSchemaPaths = [System.Collections.ArrayList]@()
+# the proxmox apidoc.js contains a list of schemas, so we need to get all paths from each schema
 foreach ($DocPath in $ApiSchema) {
     [void]$AllSchemaPaths.AddRange([array](Get-AllPathsRecursiveFromSchema -Schema $DocPath))
 }
@@ -104,18 +113,28 @@ foreach ($Path in $AllSchemaPaths) {
 
     # creating the operation object name
     $OperationObjectName = ""
+    # adding each part of the path, which arent variable names
     foreach($Part in $Path.path.Split('/').Where({ $_ -and $_ -notmatch "{|}" })){
+        # in TitleCase and without under_scores :)
         $OperationObjectName += (Get-Culture).TextInfo.ToTitleCase($Part.Replace('_',''))
     }
 
+    # for the uniqueness of the operationId I've decided to add every path variable to the OperationName as a "ByAnd"-clause.
+    # e.g.:
+    # path = /access/users/{userid}/token/{tokenid}
+    # --> $OperationObjectName = AccessUsersToken
+    # --> ByAnd-clause = ByUseridAndTokenid
+    # ==> possible operationIds: getAccessUsersTokenByUseridAndTokenid, setAccessUsersTokenByUseridAndTokenid, 
+    #                            removeAccessUsersTokenByUseridAndTokenid, newAccessUsersTokenByUseridAndTokenid
     $ByOrAnd = "By"
     foreach($Part in $Path.path.Split('/').Where({ $_ -match "{|}" }) ){
         $OperationObjectName += $ByOrAnd + (Get-Culture).TextInfo.ToTitleCase(($Part -replace "{|}|_",""))
         $ByOrAnd = "And"
     }
 
+    # setting the new operationId into the name field, which will be used later.
     foreach($Method in (Get-Member -MemberType NoteProperty -InputObject $Path.info).Name){
-        $Path.info.($Method).name = "{0}{1}" -f $operationsMappingTable[$Method],$OperationObjectName
+        $Path.info.($Method).name = "{0}{1}" -f $OperationsMappingTable[$Method],$OperationObjectName
     }
     
 }
@@ -123,10 +142,13 @@ foreach ($Path in $AllSchemaPaths) {
 # create openApi paths object
 # https://swagger.io/specification/#paths-object
 $OpenApiPathsObject = [PSCustomObject]@{}
+# adding all the pasths to the object
 foreach ($SchemaPath in ($AllSchemaPaths | Sort-Object -Property path)) {
     $OpenApiPathsObject | Add-Member -MemberType NoteProperty -Name $SchemaPath.path -Value (New-OpenApiPathItemObject -Schema $SchemaPath)
 }
 
+# building open api schema 3.1.1
+# https://swagger.io/specification/#schema-1
 $OpenApiSchema = [PSCustomObject]@{
     openapi = "3.1.1"
     info    = [PSCustomObject]@{
@@ -145,7 +167,7 @@ $OpenApiSchema = [PSCustomObject]@{
         #    identifier = ""
         #}
     }
-    paths          = $openApiPathsObject
+    paths          = $OpenApiPathsObject
     #components     = 
     #tags
     #externalDocs
