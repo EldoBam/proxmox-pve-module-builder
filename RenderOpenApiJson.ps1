@@ -184,5 +184,5 @@ $OpenApiSchema = [PSCustomObject]@{
 # https://github.com/cloudbase/powershell-yaml
 # copy schema as yaml to clipboard
 # https://editor-next.swagger.io/ <-- insert yaml from clipboard to swagger editor for development and testing :)
-$openApiSchema | ConvertTo-Yaml | Set-Clipboard
-
+$OpenApiSchema | ConvertTo-Yaml | Set-Clipboard
+$OpenApiSchema | ConvertTo-Yaml | Out-File -FilePath "$($PSScriptRoot)/proxmox_ve_api_oa_3.1.1.yaml"

@@ -1,0 +1,2609 @@
+openapi: 3.1.1
+info:
+  title: Proxmox VE Module 1.0
+  summary: Module to access Proxmox VE Api
+  description: Generated OpenApiDescription to render Modules via OpenapiGenerator
+  termsOfService: ""
+  contact:
+    name: ""
+    url: ""
+    email: ""
+  version: "0.1"
+paths:
+  /access:
+    summary: access
+    get:
+      description: Directory index.
+      operationId: getAccess
+  /access/acl:
+    summary: acl
+    get:
+      description: Get Access Control List (ACLs).
+      operationId: getAccessAcl
+    put:
+      description: Update Access Control List (add or remove permissions).
+      operationId: setAccessAcl
+  /access/domains:
+    summary: domains
+    get:
+      description: Authentication domain index.
+      operationId: getAccessDomains
+    post:
+      description: Add an authentication server.
+      operationId: newAccessDomains
+  /access/domains/{realm}:
+    summary: realm
+    delete:
+      description: Delete an authentication server.
+      operationId: removeAccessDomainsByRealm
+    get:
+      description: Get auth server configuration.
+      operationId: getAccessDomainsByRealm
+    put:
+      description: Update authentication server settings.
+      operationId: setAccessDomainsByRealm
+  /access/domains/{realm}/sync:
+    summary: sync
+    post:
+      description: "Syncs users and/or groups from the configured LDAP to user.cfg. NOTE: Synced groups will have the name 'name-$realm', so make sure those groups do not exist to prevent overwriting."
+      operationId: newAccessDomainsSyncByRealm
+  /access/groups:
+    summary: groups
+    get:
+      description: Group index.
+      operationId: getAccessGroups
+    post:
+      description: Create new group.
+      operationId: newAccessGroups
+  /access/groups/{groupid}:
+    summary: groupid
+    delete:
+      description: Delete group.
+      operationId: removeAccessGroupsByGroupid
+    get:
+      description: Get group configuration.
+      operationId: getAccessGroupsByGroupid
+    put:
+      description: Update group data.
+      operationId: setAccessGroupsByGroupid
+  /access/openid:
+    summary: openid
+    get:
+      description: Directory index.
+      operationId: getAccessOpenid
+  /access/openid/auth-url:
+    summary: auth-url
+    post:
+      description: Get the OpenId Authorization Url for the specified realm.
+      operationId: newAccessOpenidAuth-Url
+  /access/openid/login:
+    summary: login
+    post:
+      description: ' Verify OpenID authorization code and create a ticket.'
+      operationId: newAccessOpenidLogin
+  /access/password:
+    summary: password
+    put:
+      description: Change user password.
+      operationId: setAccessPassword
+  /access/permissions:
+    summary: permissions
+    get:
+      description: Retrieve effective permissions of given user/token.
+      operationId: getAccessPermissions
+  /access/roles:
+    summary: roles
+    get:
+      description: Role index.
+      operationId: getAccessRoles
+    post:
+      description: Create new role.
+      operationId: newAccessRoles
+  /access/roles/{roleid}:
+    summary: roleid
+    delete:
+      description: Delete role.
+      operationId: removeAccessRolesByRoleid
+    get:
+      description: Get role configuration.
+      operationId: getAccessRolesByRoleid
+    put:
+      description: Update an existing role.
+      operationId: setAccessRolesByRoleid
+  /access/tfa:
+    summary: tfa
+    get:
+      description: List TFA configurations of users.
+      operationId: getAccessTfa
+  /access/tfa/{userid}:
+    summary: userid
+    get:
+      description: List TFA configurations of users.
+      operationId: getAccessTfaByUserid
+    post:
+      description: Add a TFA entry for a user.
+      operationId: newAccessTfaByUserid
+  /access/tfa/{userid}/{id}:
+    summary: id
+    delete:
+      description: Delete a TFA entry by ID.
+      operationId: removeAccessTfaByUseridAndId
+    get:
+      description: Fetch a requested TFA entry if present.
+      operationId: getAccessTfaByUseridAndId
+    put:
+      description: Add a TFA entry for a user.
+      operationId: setAccessTfaByUseridAndId
+  /access/ticket:
+    summary: ticket
+    get:
+      description: Dummy. Useful for formatters which want to provide a login page.
+      operationId: getAccessTicket
+    post:
+      description: Create or verify authentication ticket.
+      operationId: newAccessTicket
+  /access/users:
+    summary: users
+    get:
+      description: User index.
+      operationId: getAccessUsers
+    post:
+      description: Create new user.
+      operationId: newAccessUsers
+  /access/users/{userid}:
+    summary: userid
+    delete:
+      description: Delete user.
+      operationId: removeAccessUsersByUserid
+    get:
+      description: Get user configuration.
+      operationId: getAccessUsersByUserid
+    put:
+      description: Update user configuration.
+      operationId: setAccessUsersByUserid
+  /access/users/{userid}/tfa:
+    summary: tfa
+    get:
+      description: Get user TFA types (Personal and Realm).
+      operationId: getAccessUsersTfaByUserid
+  /access/users/{userid}/token:
+    summary: token
+    get:
+      description: Get user API tokens.
+      operationId: getAccessUsersTokenByUserid
+  /access/users/{userid}/token/{tokenid}:
+    summary: tokenid
+    delete:
+      description: Remove API token for a specific user.
+      operationId: removeAccessUsersTokenByUseridAndTokenid
+    get:
+      description: Get specific API token information.
+      operationId: getAccessUsersTokenByUseridAndTokenid
+    post:
+      description: 'Generate a new API token for a specific user. NOTE: returns API token value, which needs to be stored as it cannot be retrieved afterwards!'
+      operationId: newAccessUsersTokenByUseridAndTokenid
+    put:
+      description: Update API token for a specific user.
+      operationId: setAccessUsersTokenByUseridAndTokenid
+  /access/users/{userid}/unlock-tfa:
+    summary: unlock-tfa
+    put:
+      description: Unlock a user's TFA authentication.
+      operationId: setAccessUsersUnlock-TfaByUserid
+  /cluster:
+    summary: cluster
+    get:
+      description: Cluster index.
+      operationId: getCluster
+  /cluster/acme:
+    summary: acme
+    get:
+      description: ACMEAccount index.
+      operationId: getClusterAcme
+  /cluster/acme/account:
+    summary: account
+    get:
+      description: ACMEAccount index.
+      operationId: getClusterAcmeAccount
+    post:
+      description: Register a new ACME account with CA.
+      operationId: newClusterAcmeAccount
+  /cluster/acme/account/{name}:
+    summary: name
+    delete:
+      description: Deactivate existing ACME account at CA.
+      operationId: removeClusterAcmeAccountByName
+    get:
+      description: Return existing ACME account information.
+      operationId: getClusterAcmeAccountByName
+    put:
+      description: 'Update existing ACME account information with CA. Note: not specifying any new account information triggers a refresh.'
+      operationId: setClusterAcmeAccountByName
+  /cluster/acme/challenge-schema:
+    summary: challenge-schema
+    get:
+      description: Get schema of ACME challenge types.
+      operationId: getClusterAcmeChallenge-Schema
+  /cluster/acme/directories:
+    summary: directories
+    get:
+      description: Get named known ACME directory endpoints.
+      operationId: getClusterAcmeDirectories
+  /cluster/acme/meta:
+    summary: meta
+    get:
+      description: Retrieve ACME Directory Meta Information
+      operationId: getClusterAcmeMeta
+  /cluster/acme/plugins:
+    summary: plugins
+    get:
+      description: ACME plugin index.
+      operationId: getClusterAcmePlugins
+    post:
+      description: Add ACME plugin configuration.
+      operationId: newClusterAcmePlugins
+  /cluster/acme/plugins/{id}:
+    summary: id
+    delete:
+      description: Delete ACME plugin configuration.
+      operationId: removeClusterAcmePluginsById
+    get:
+      description: Get ACME plugin configuration.
+      operationId: getClusterAcmePluginsById
+    put:
+      description: Update ACME plugin configuration.
+      operationId: setClusterAcmePluginsById
+  /cluster/acme/tos:
+    summary: tos
+    get:
+      description: Retrieve ACME TermsOfService URL from CA. Deprecated, please use /cluster/acme/meta.
+      operationId: getClusterAcmeTos
+  /cluster/backup:
+    summary: backup
+    get:
+      description: List vzdump backup schedule.
+      operationId: getClusterBackup
+    post:
+      description: Create new vzdump backup job.
+      operationId: newClusterBackup
+  /cluster/backup-info:
+    summary: backup-info
+    get:
+      description: Index for backup info related endpoints
+      operationId: getClusterBackup-Info
+  /cluster/backup-info/not-backed-up:
+    summary: not-backed-up
+    get:
+      description: Shows all guests which are not covered by any backup job.
+      operationId: getClusterBackup-InfoNot-Backed-Up
+  /cluster/backup/{id}:
+    summary: id
+    delete:
+      description: Delete vzdump backup job definition.
+      operationId: removeClusterBackupById
+    get:
+      description: Read vzdump backup job definition.
+      operationId: getClusterBackupById
+    put:
+      description: Update vzdump backup job definition.
+      operationId: setClusterBackupById
+  /cluster/backup/{id}/included_volumes:
+    summary: includedvolumes
+    get:
+      description: Returns included guests and the backup status of their disks. Optimized to be used in ExtJS tree views.
+      operationId: getClusterBackupIncludedvolumesById
+  /cluster/ceph:
+    summary: ceph
+    get:
+      description: Cluster ceph index.
+      operationId: getClusterCeph
+  /cluster/ceph/flags:
+    summary: flags
+    get:
+      description: get the status of all ceph flags
+      operationId: getClusterCephFlags
+    put:
+      description: Set/Unset multiple ceph flags at once.
+      operationId: setClusterCephFlags
+  /cluster/ceph/flags/{flag}:
+    summary: flag
+    get:
+      description: Get the status of a specific ceph flag.
+      operationId: getClusterCephFlagsByFlag
+    put:
+      description: Set or clear (unset) a specific ceph flag
+      operationId: setClusterCephFlagsByFlag
+  /cluster/ceph/metadata:
+    summary: metadata
+    get:
+      description: Get ceph metadata.
+      operationId: getClusterCephMetadata
+  /cluster/ceph/status:
+    summary: status
+    get:
+      description: Get ceph status.
+      operationId: getClusterCephStatus
+  /cluster/config:
+    summary: config
+    get:
+      description: Directory index.
+      operationId: getClusterConfig
+    post:
+      description: Generate new cluster configuration. If no links given, default to local IP address as link0.
+      operationId: newClusterConfig
+  /cluster/config/apiversion:
+    summary: apiversion
+    get:
+      description: Return the version of the cluster join API available on this node.
+      operationId: getClusterConfigApiversion
+  /cluster/config/join:
+    summary: join
+    get:
+      description: Get information needed to join this cluster over the connected node.
+      operationId: getClusterConfigJoin
+    post:
+      description: Joins this node into an existing cluster. If no links are given, default to IP resolved by node's hostname on single link (fallback fails for clusters with multiple links).
+      operationId: newClusterConfigJoin
+  /cluster/config/nodes:
+    summary: nodes
+    get:
+      description: Corosync node list.
+      operationId: getClusterConfigNodes
+  /cluster/config/nodes/{node}:
+    summary: node
+    delete:
+      description: Removes a node from the cluster configuration.
+      operationId: removeClusterConfigNodesByNode
+    post:
+      description: Adds a node to the cluster configuration. This call is for internal use.
+      operationId: newClusterConfigNodesByNode
+  /cluster/config/qdevice:
+    summary: qdevice
+    get:
+      description: Get QDevice status
+      operationId: getClusterConfigQdevice
+  /cluster/config/totem:
+    summary: totem
+    get:
+      description: Get corosync totem protocol settings.
+      operationId: getClusterConfigTotem
+  /cluster/firewall:
+    summary: firewall
+    get:
+      description: Directory index.
+      operationId: getClusterFirewall
+  /cluster/firewall/aliases:
+    summary: aliases
+    get:
+      description: List aliases
+      operationId: getClusterFirewallAliases
+    post:
+      description: Create IP or Network Alias.
+      operationId: newClusterFirewallAliases
+  /cluster/firewall/aliases/{name}:
+    summary: name
+    delete:
+      description: Remove IP or Network alias.
+      operationId: removeClusterFirewallAliasesByName
+    get:
+      description: Read alias.
+      operationId: getClusterFirewallAliasesByName
+    put:
+      description: Update IP or Network alias.
+      operationId: setClusterFirewallAliasesByName
+  /cluster/firewall/groups:
+    summary: groups
+    get:
+      description: List security groups.
+      operationId: getClusterFirewallGroups
+    post:
+      description: Create new security group.
+      operationId: newClusterFirewallGroups
+  /cluster/firewall/groups/{group}:
+    summary: group
+    delete:
+      description: Delete security group.
+      operationId: removeClusterFirewallGroupsByGroup
+    get:
+      description: List rules.
+      operationId: getClusterFirewallGroupsByGroup
+    post:
+      description: Create new rule.
+      operationId: newClusterFirewallGroupsByGroup
+  /cluster/firewall/groups/{group}/{pos}:
+    summary: pos
+    delete:
+      description: Delete rule.
+      operationId: removeClusterFirewallGroupsByGroupAndPos
+    get:
+      description: Get single rule data.
+      operationId: getClusterFirewallGroupsByGroupAndPos
+    put:
+      description: Modify rule data.
+      operationId: setClusterFirewallGroupsByGroupAndPos
+  /cluster/firewall/ipset:
+    summary: ipset
+    get:
+      description: List IPSets
+      operationId: getClusterFirewallIpset
+    post:
+      description: Create new IPSet
+      operationId: newClusterFirewallIpset
+  /cluster/firewall/ipset/{name}:
+    summary: name
+    delete:
+      description: Delete IPSet
+      operationId: removeClusterFirewallIpsetByName
+    get:
+      description: List IPSet content
+      operationId: getClusterFirewallIpsetByName
+    post:
+      description: Add IP or Network to IPSet.
+      operationId: newClusterFirewallIpsetByName
+  /cluster/firewall/ipset/{name}/{cidr}:
+    summary: cidr
+    delete:
+      description: Remove IP or Network from IPSet.
+      operationId: removeClusterFirewallIpsetByNameAndCidr
+    get:
+      description: Read IP or Network settings from IPSet.
+      operationId: getClusterFirewallIpsetByNameAndCidr
+    put:
+      description: Update IP or Network settings
+      operationId: setClusterFirewallIpsetByNameAndCidr
+  /cluster/firewall/macros:
+    summary: macros
+    get:
+      description: List available macros
+      operationId: getClusterFirewallMacros
+  /cluster/firewall/options:
+    summary: options
+    get:
+      description: Get Firewall options.
+      operationId: getClusterFirewallOptions
+    put:
+      description: Set Firewall options.
+      operationId: setClusterFirewallOptions
+  /cluster/firewall/refs:
+    summary: refs
+    get:
+      description: Lists possible IPSet/Alias reference which are allowed in source/dest properties.
+      operationId: getClusterFirewallRefs
+  /cluster/firewall/rules:
+    summary: rules
+    get:
+      description: List rules.
+      operationId: getClusterFirewallRules
+    post:
+      description: Create new rule.
+      operationId: newClusterFirewallRules
+  /cluster/firewall/rules/{pos}:
+    summary: pos
+    delete:
+      description: Delete rule.
+      operationId: removeClusterFirewallRulesByPos
+    get:
+      description: Get single rule data.
+      operationId: getClusterFirewallRulesByPos
+    put:
+      description: Modify rule data.
+      operationId: setClusterFirewallRulesByPos
+  /cluster/ha:
+    summary: ha
+    get:
+      description: Directory index.
+      operationId: getClusterHa
+  /cluster/ha/groups:
+    summary: groups
+    get:
+      description: Get HA groups.
+      operationId: getClusterHaGroups
+    post:
+      description: Create a new HA group.
+      operationId: newClusterHaGroups
+  /cluster/ha/groups/{group}:
+    summary: group
+    delete:
+      description: Delete ha group configuration.
+      operationId: removeClusterHaGroupsByGroup
+    get:
+      description: Read ha group configuration.
+      operationId: getClusterHaGroupsByGroup
+    put:
+      description: Update ha group configuration.
+      operationId: setClusterHaGroupsByGroup
+  /cluster/ha/resources:
+    summary: resources
+    get:
+      description: List HA resources.
+      operationId: getClusterHaResources
+    post:
+      description: Create a new HA resource.
+      operationId: newClusterHaResources
+  /cluster/ha/resources/{sid}:
+    summary: sid
+    delete:
+      description: Delete resource configuration.
+      operationId: removeClusterHaResourcesBySid
+    get:
+      description: Read resource configuration.
+      operationId: getClusterHaResourcesBySid
+    put:
+      description: Update resource configuration.
+      operationId: setClusterHaResourcesBySid
+  /cluster/ha/resources/{sid}/migrate:
+    summary: migrate
+    post:
+      description: Request resource migration (online) to another node.
+      operationId: newClusterHaResourcesMigrateBySid
+  /cluster/ha/resources/{sid}/relocate:
+    summary: relocate
+    post:
+      description: Request resource relocatzion to another node. This stops the service on the old node, and restarts it on the target node.
+      operationId: newClusterHaResourcesRelocateBySid
+  /cluster/ha/status:
+    summary: status
+    get:
+      description: Directory index.
+      operationId: getClusterHaStatus
+  /cluster/ha/status/current:
+    summary: current
+    get:
+      description: Get HA manger status.
+      operationId: getClusterHaStatusCurrent
+  /cluster/ha/status/manager_status:
+    summary: managerstatus
+    get:
+      description: Get full HA manger status, including LRM status.
+      operationId: getClusterHaStatusManagerstatus
+  /cluster/jobs:
+    summary: jobs
+    get:
+      description: Index for jobs related endpoints.
+      operationId: getClusterJobs
+  /cluster/jobs/realm-sync:
+    summary: realm-sync
+    get:
+      description: List configured realm-sync-jobs.
+      operationId: getClusterJobsRealm-Sync
+  /cluster/jobs/realm-sync/{id}:
+    summary: id
+    delete:
+      description: Delete realm-sync job definition.
+      operationId: removeClusterJobsRealm-SyncById
+    get:
+      description: Read realm-sync job definition.
+      operationId: getClusterJobsRealm-SyncById
+    post:
+      description: Create new realm-sync job.
+      operationId: newClusterJobsRealm-SyncById
+    put:
+      description: Update realm-sync job definition.
+      operationId: setClusterJobsRealm-SyncById
+  /cluster/jobs/schedule-analyze:
+    summary: schedule-analyze
+    get:
+      description: Returns a list of future schedule runtimes.
+      operationId: getClusterJobsSchedule-Analyze
+  /cluster/log:
+    summary: log
+    get:
+      description: Read cluster log
+      operationId: getClusterLog
+  /cluster/mapping:
+    summary: mapping
+    get:
+      description: List resource types.
+      operationId: getClusterMapping
+  /cluster/mapping/pci:
+    summary: pci
+    get:
+      description: List PCI Hardware Mapping
+      operationId: getClusterMappingPci
+    post:
+      description: Create a new hardware mapping.
+      operationId: newClusterMappingPci
+  /cluster/mapping/pci/{id}:
+    summary: id
+    delete:
+      description: Remove Hardware Mapping.
+      operationId: removeClusterMappingPciById
+    get:
+      description: Get PCI Mapping.
+      operationId: getClusterMappingPciById
+    put:
+      description: Update a hardware mapping.
+      operationId: setClusterMappingPciById
+  /cluster/mapping/usb:
+    summary: usb
+    get:
+      description: List USB Hardware Mappings
+      operationId: getClusterMappingUsb
+    post:
+      description: Create a new hardware mapping.
+      operationId: newClusterMappingUsb
+  /cluster/mapping/usb/{id}:
+    summary: id
+    delete:
+      description: Remove Hardware Mapping.
+      operationId: removeClusterMappingUsbById
+    get:
+      description: Get USB Mapping.
+      operationId: getClusterMappingUsbById
+    put:
+      description: Update a hardware mapping.
+      operationId: setClusterMappingUsbById
+  /cluster/metrics:
+    summary: metrics
+    get:
+      description: Metrics index.
+      operationId: getClusterMetrics
+  /cluster/metrics/export:
+    summary: export
+    get:
+      description: Retrieve metrics of the cluster.
+      operationId: getClusterMetricsExport
+  /cluster/metrics/server:
+    summary: server
+    get:
+      description: List configured metric servers.
+      operationId: getClusterMetricsServer
+  /cluster/metrics/server/{id}:
+    summary: id
+    delete:
+      description: Remove Metric server.
+      operationId: removeClusterMetricsServerById
+    get:
+      description: Read metric server configuration.
+      operationId: getClusterMetricsServerById
+    post:
+      description: Create a new external metric server config
+      operationId: newClusterMetricsServerById
+    put:
+      description: Update metric server configuration.
+      operationId: setClusterMetricsServerById
+  /cluster/nextid:
+    summary: nextid
+    get:
+      description: Get next free VMID. Pass a VMID to assert that its free (at time of check).
+      operationId: getClusterNextid
+  /cluster/notifications:
+    summary: notifications
+    get:
+      description: Index for notification-related API endpoints.
+      operationId: getClusterNotifications
+  /cluster/notifications/endpoints:
+    summary: endpoints
+    get:
+      description: Index for all available endpoint types.
+      operationId: getClusterNotificationsEndpoints
+  /cluster/notifications/endpoints/gotify:
+    summary: gotify
+    get:
+      description: Returns a list of all gotify endpoints
+      operationId: getClusterNotificationsEndpointsGotify
+    post:
+      description: Create a new gotify endpoint
+      operationId: newClusterNotificationsEndpointsGotify
+  /cluster/notifications/endpoints/gotify/{name}:
+    summary: name
+    delete:
+      description: Remove gotify endpoint
+      operationId: removeClusterNotificationsEndpointsGotifyByName
+    get:
+      description: Return a specific gotify endpoint
+      operationId: getClusterNotificationsEndpointsGotifyByName
+    put:
+      description: Update existing gotify endpoint
+      operationId: setClusterNotificationsEndpointsGotifyByName
+  /cluster/notifications/endpoints/sendmail:
+    summary: sendmail
+    get:
+      description: Returns a list of all sendmail endpoints
+      operationId: getClusterNotificationsEndpointsSendmail
+    post:
+      description: Create a new sendmail endpoint
+      operationId: newClusterNotificationsEndpointsSendmail
+  /cluster/notifications/endpoints/sendmail/{name}:
+    summary: name
+    delete:
+      description: Remove sendmail endpoint
+      operationId: removeClusterNotificationsEndpointsSendmailByName
+    get:
+      description: Return a specific sendmail endpoint
+      operationId: getClusterNotificationsEndpointsSendmailByName
+    put:
+      description: Update existing sendmail endpoint
+      operationId: setClusterNotificationsEndpointsSendmailByName
+  /cluster/notifications/endpoints/smtp:
+    summary: smtp
+    get:
+      description: Returns a list of all smtp endpoints
+      operationId: getClusterNotificationsEndpointsSmtp
+    post:
+      description: Create a new smtp endpoint
+      operationId: newClusterNotificationsEndpointsSmtp
+  /cluster/notifications/endpoints/smtp/{name}:
+    summary: name
+    delete:
+      description: Remove smtp endpoint
+      operationId: removeClusterNotificationsEndpointsSmtpByName
+    get:
+      description: Return a specific smtp endpoint
+      operationId: getClusterNotificationsEndpointsSmtpByName
+    put:
+      description: Update existing smtp endpoint
+      operationId: setClusterNotificationsEndpointsSmtpByName
+  /cluster/notifications/endpoints/webhook:
+    summary: webhook
+    get:
+      description: Returns a list of all webhook endpoints
+      operationId: getClusterNotificationsEndpointsWebhook
+    post:
+      description: Create a new webhook endpoint
+      operationId: newClusterNotificationsEndpointsWebhook
+  /cluster/notifications/endpoints/webhook/{name}:
+    summary: name
+    delete:
+      description: Remove webhook endpoint
+      operationId: removeClusterNotificationsEndpointsWebhookByName
+    get:
+      description: Return a specific webhook endpoint
+      operationId: getClusterNotificationsEndpointsWebhookByName
+    put:
+      description: Update existing webhook endpoint
+      operationId: setClusterNotificationsEndpointsWebhookByName
+  /cluster/notifications/matcher-field-values:
+    summary: matcher-field-values
+    get:
+      description: Returns known notification metadata fields and their known values
+      operationId: getClusterNotificationsMatcher-Field-Values
+  /cluster/notifications/matcher-fields:
+    summary: matcher-fields
+    get:
+      description: Returns known notification metadata fields
+      operationId: getClusterNotificationsMatcher-Fields
+  /cluster/notifications/matchers:
+    summary: matchers
+    get:
+      description: Returns a list of all matchers
+      operationId: getClusterNotificationsMatchers
+    post:
+      description: Create a new matcher
+      operationId: newClusterNotificationsMatchers
+  /cluster/notifications/matchers/{name}:
+    summary: name
+    delete:
+      description: Remove matcher
+      operationId: removeClusterNotificationsMatchersByName
+    get:
+      description: Return a specific matcher
+      operationId: getClusterNotificationsMatchersByName
+    put:
+      description: Update existing matcher
+      operationId: setClusterNotificationsMatchersByName
+  /cluster/notifications/targets:
+    summary: targets
+    get:
+      description: Returns a list of all entities that can be used as notification targets.
+      operationId: getClusterNotificationsTargets
+  /cluster/notifications/targets/{name}:
+    summary: name
+  /cluster/notifications/targets/{name}/test:
+    summary: test
+    post:
+      description: Send a test notification to a provided target.
+      operationId: newClusterNotificationsTargetsTestByName
+  /cluster/options:
+    summary: options
+    get:
+      description: Get datacenter options. Without 'Sys.Audit' on '/' not all options are returned.
+      operationId: getClusterOptions
+    put:
+      description: Set datacenter options.
+      operationId: setClusterOptions
+  /cluster/replication:
+    summary: replication
+    get:
+      description: List replication jobs.
+      operationId: getClusterReplication
+    post:
+      description: Create a new replication job
+      operationId: newClusterReplication
+  /cluster/replication/{id}:
+    summary: id
+    delete:
+      description: Mark replication job for removal.
+      operationId: removeClusterReplicationById
+    get:
+      description: Read replication job configuration.
+      operationId: getClusterReplicationById
+    put:
+      description: Update replication job configuration.
+      operationId: setClusterReplicationById
+  /cluster/resources:
+    summary: resources
+    get:
+      description: Resources index (cluster wide).
+      operationId: getClusterResources
+  /cluster/sdn:
+    summary: sdn
+    get:
+      description: Directory index.
+      operationId: getClusterSdn
+    put:
+      description: Apply sdn controller changes && reload.
+      operationId: setClusterSdn
+  /cluster/sdn/controllers:
+    summary: controllers
+    get:
+      description: SDN controllers index.
+      operationId: getClusterSdnControllers
+    post:
+      description: Create a new sdn controller object.
+      operationId: newClusterSdnControllers
+  /cluster/sdn/controllers/{controller}:
+    summary: controller
+    delete:
+      description: Delete sdn controller object configuration.
+      operationId: removeClusterSdnControllersByController
+    get:
+      description: Read sdn controller configuration.
+      operationId: getClusterSdnControllersByController
+    put:
+      description: Update sdn controller object configuration.
+      operationId: setClusterSdnControllersByController
+  /cluster/sdn/dns:
+    summary: dns
+    get:
+      description: SDN dns index.
+      operationId: getClusterSdnDns
+    post:
+      description: Create a new sdn dns object.
+      operationId: newClusterSdnDns
+  /cluster/sdn/dns/{dns}:
+    summary: dns
+    delete:
+      description: Delete sdn dns object configuration.
+      operationId: removeClusterSdnDnsByDns
+    get:
+      description: Read sdn dns configuration.
+      operationId: getClusterSdnDnsByDns
+    put:
+      description: Update sdn dns object configuration.
+      operationId: setClusterSdnDnsByDns
+  /cluster/sdn/ipams:
+    summary: ipams
+    get:
+      description: SDN ipams index.
+      operationId: getClusterSdnIpams
+    post:
+      description: Create a new sdn ipam object.
+      operationId: newClusterSdnIpams
+  /cluster/sdn/ipams/{ipam}:
+    summary: ipam
+    delete:
+      description: Delete sdn ipam object configuration.
+      operationId: removeClusterSdnIpamsByIpam
+    get:
+      description: Read sdn ipam configuration.
+      operationId: getClusterSdnIpamsByIpam
+    put:
+      description: Update sdn ipam object configuration.
+      operationId: setClusterSdnIpamsByIpam
+  /cluster/sdn/ipams/{ipam}/status:
+    summary: status
+    get:
+      description: List PVE IPAM Entries
+      operationId: getClusterSdnIpamsStatusByIpam
+  /cluster/sdn/vnets:
+    summary: vnets
+    get:
+      description: SDN vnets index.
+      operationId: getClusterSdnVnets
+    post:
+      description: Create a new sdn vnet object.
+      operationId: newClusterSdnVnets
+  /cluster/sdn/vnets/{vnet}:
+    summary: vnet
+    delete:
+      description: Delete sdn vnet object configuration.
+      operationId: removeClusterSdnVnetsByVnet
+    get:
+      description: Read sdn vnet configuration.
+      operationId: getClusterSdnVnetsByVnet
+    put:
+      description: Update sdn vnet object configuration.
+      operationId: setClusterSdnVnetsByVnet
+  /cluster/sdn/vnets/{vnet}/firewall:
+    summary: firewall
+    get:
+      description: Directory index.
+      operationId: getClusterSdnVnetsFirewallByVnet
+  /cluster/sdn/vnets/{vnet}/firewall/options:
+    summary: options
+    get:
+      description: Get vnet firewall options.
+      operationId: getClusterSdnVnetsFirewallOptionsByVnet
+    put:
+      description: Set Firewall options.
+      operationId: setClusterSdnVnetsFirewallOptionsByVnet
+  /cluster/sdn/vnets/{vnet}/firewall/rules:
+    summary: rules
+    get:
+      description: List rules.
+      operationId: getClusterSdnVnetsFirewallRulesByVnet
+    post:
+      description: Create new rule.
+      operationId: newClusterSdnVnetsFirewallRulesByVnet
+  /cluster/sdn/vnets/{vnet}/firewall/rules/{pos}:
+    summary: pos
+    delete:
+      description: Delete rule.
+      operationId: removeClusterSdnVnetsFirewallRulesByVnetAndPos
+    get:
+      description: Get single rule data.
+      operationId: getClusterSdnVnetsFirewallRulesByVnetAndPos
+    put:
+      description: Modify rule data.
+      operationId: setClusterSdnVnetsFirewallRulesByVnetAndPos
+  /cluster/sdn/vnets/{vnet}/ips:
+    summary: ips
+    delete:
+      description: Delete IP Mappings in a VNet
+      operationId: removeClusterSdnVnetsIpsByVnet
+    post:
+      description: Create IP Mapping in a VNet
+      operationId: newClusterSdnVnetsIpsByVnet
+    put:
+      description: Update IP Mapping in a VNet
+      operationId: setClusterSdnVnetsIpsByVnet
+  /cluster/sdn/vnets/{vnet}/subnets:
+    summary: subnets
+    get:
+      description: SDN subnets index.
+      operationId: getClusterSdnVnetsSubnetsByVnet
+    post:
+      description: Create a new sdn subnet object.
+      operationId: newClusterSdnVnetsSubnetsByVnet
+  /cluster/sdn/vnets/{vnet}/subnets/{subnet}:
+    summary: subnet
+    delete:
+      description: Delete sdn subnet object configuration.
+      operationId: removeClusterSdnVnetsSubnetsByVnetAndSubnet
+    get:
+      description: Read sdn subnet configuration.
+      operationId: getClusterSdnVnetsSubnetsByVnetAndSubnet
+    put:
+      description: Update sdn subnet object configuration.
+      operationId: setClusterSdnVnetsSubnetsByVnetAndSubnet
+  /cluster/sdn/zones:
+    summary: zones
+    get:
+      description: SDN zones index.
+      operationId: getClusterSdnZones
+    post:
+      description: Create a new sdn zone object.
+      operationId: newClusterSdnZones
+  /cluster/sdn/zones/{zone}:
+    summary: zone
+    delete:
+      description: Delete sdn zone object configuration.
+      operationId: removeClusterSdnZonesByZone
+    get:
+      description: Read sdn zone configuration.
+      operationId: getClusterSdnZonesByZone
+    put:
+      description: Update sdn zone object configuration.
+      operationId: setClusterSdnZonesByZone
+  /cluster/status:
+    summary: status
+    get:
+      description: Get cluster status information.
+      operationId: getClusterStatus
+  /cluster/tasks:
+    summary: tasks
+    get:
+      description: List recent tasks (cluster wide).
+      operationId: getClusterTasks
+  /nodes:
+    summary: nodes
+    get:
+      description: Cluster node index.
+      operationId: getNodes
+  /nodes/{node}:
+    summary: node
+    get:
+      description: Node index.
+      operationId: getNodesByNode
+  /nodes/{node}/aplinfo:
+    summary: aplinfo
+    get:
+      description: Get list of appliances.
+      operationId: getNodesAplinfoByNode
+    post:
+      description: Download appliance templates.
+      operationId: newNodesAplinfoByNode
+  /nodes/{node}/apt:
+    summary: apt
+    get:
+      description: Directory index for apt (Advanced Package Tool).
+      operationId: getNodesAptByNode
+  /nodes/{node}/apt/changelog:
+    summary: changelog
+    get:
+      description: Get package changelogs.
+      operationId: getNodesAptChangelogByNode
+  /nodes/{node}/apt/repositories:
+    summary: repositories
+    get:
+      description: Get APT repository information.
+      operationId: getNodesAptRepositoriesByNode
+    post:
+      description: Change the properties of a repository. Currently only allows enabling/disabling.
+      operationId: newNodesAptRepositoriesByNode
+    put:
+      description: Add a standard repository to the configuration
+      operationId: setNodesAptRepositoriesByNode
+  /nodes/{node}/apt/update:
+    summary: update
+    get:
+      description: List available updates.
+      operationId: getNodesAptUpdateByNode
+    post:
+      description: This is used to resynchronize the package index files from their sources (apt-get update).
+      operationId: newNodesAptUpdateByNode
+  /nodes/{node}/apt/versions:
+    summary: versions
+    get:
+      description: Get package information for important Proxmox packages.
+      operationId: getNodesAptVersionsByNode
+  /nodes/{node}/capabilities:
+    summary: capabilities
+    get:
+      description: Node capabilities index.
+      operationId: getNodesCapabilitiesByNode
+  /nodes/{node}/capabilities/qemu:
+    summary: qemu
+    get:
+      description: QEMU capabilities index.
+      operationId: getNodesCapabilitiesQemuByNode
+  /nodes/{node}/capabilities/qemu/cpu:
+    summary: cpu
+    get:
+      description: List all custom and default CPU models.
+      operationId: getNodesCapabilitiesQemuCpuByNode
+  /nodes/{node}/capabilities/qemu/machines:
+    summary: machines
+    get:
+      description: Get available QEMU/KVM machine types.
+      operationId: getNodesCapabilitiesQemuMachinesByNode
+  /nodes/{node}/ceph:
+    summary: ceph
+    get:
+      description: Directory index.
+      operationId: getNodesCephByNode
+  /nodes/{node}/ceph/cfg:
+    summary: cfg
+    get:
+      description: Directory index.
+      operationId: getNodesCephCfgByNode
+  /nodes/{node}/ceph/cfg/db:
+    summary: db
+    get:
+      description: Get the Ceph configuration database.
+      operationId: getNodesCephCfgDbByNode
+  /nodes/{node}/ceph/cfg/raw:
+    summary: raw
+    get:
+      description: Get the Ceph configuration file.
+      operationId: getNodesCephCfgRawByNode
+  /nodes/{node}/ceph/cfg/value:
+    summary: value
+    get:
+      description: Get configured values from either the config file or config DB.
+      operationId: getNodesCephCfgValueByNode
+  /nodes/{node}/ceph/cmd-safety:
+    summary: cmd-safety
+    get:
+      description: Heuristical check if it is safe to perform an action.
+      operationId: getNodesCephCmd-SafetyByNode
+  /nodes/{node}/ceph/crush:
+    summary: crush
+    get:
+      description: Get OSD crush map
+      operationId: getNodesCephCrushByNode
+  /nodes/{node}/ceph/fs:
+    summary: fs
+    get:
+      description: Directory index.
+      operationId: getNodesCephFsByNode
+  /nodes/{node}/ceph/fs/{name}:
+    summary: name
+    post:
+      description: Create a Ceph filesystem
+      operationId: newNodesCephFsByNodeAndName
+  /nodes/{node}/ceph/init:
+    summary: init
+    post:
+      description: Create initial ceph default configuration and setup symlinks.
+      operationId: newNodesCephInitByNode
+  /nodes/{node}/ceph/log:
+    summary: log
+    get:
+      description: Read ceph log
+      operationId: getNodesCephLogByNode
+  /nodes/{node}/ceph/mds:
+    summary: mds
+    get:
+      description: MDS directory index.
+      operationId: getNodesCephMdsByNode
+  /nodes/{node}/ceph/mds/{name}:
+    summary: name
+    delete:
+      description: Destroy Ceph Metadata Server
+      operationId: removeNodesCephMdsByNodeAndName
+    post:
+      description: Create Ceph Metadata Server (MDS)
+      operationId: newNodesCephMdsByNodeAndName
+  /nodes/{node}/ceph/mgr:
+    summary: mgr
+    get:
+      description: MGR directory index.
+      operationId: getNodesCephMgrByNode
+  /nodes/{node}/ceph/mgr/{id}:
+    summary: id
+    delete:
+      description: Destroy Ceph Manager.
+      operationId: removeNodesCephMgrByNodeAndId
+    post:
+      description: Create Ceph Manager
+      operationId: newNodesCephMgrByNodeAndId
+  /nodes/{node}/ceph/mon:
+    summary: mon
+    get:
+      description: Get Ceph monitor list.
+      operationId: getNodesCephMonByNode
+  /nodes/{node}/ceph/mon/{monid}:
+    summary: monid
+    delete:
+      description: Destroy Ceph Monitor and Manager.
+      operationId: removeNodesCephMonByNodeAndMonid
+    post:
+      description: Create Ceph Monitor and Manager
+      operationId: newNodesCephMonByNodeAndMonid
+  /nodes/{node}/ceph/osd:
+    summary: osd
+    get:
+      description: Get Ceph osd list/tree.
+      operationId: getNodesCephOsdByNode
+    post:
+      description: Create OSD
+      operationId: newNodesCephOsdByNode
+  /nodes/{node}/ceph/osd/{osdid}:
+    summary: osdid
+    delete:
+      description: Destroy OSD
+      operationId: removeNodesCephOsdByNodeAndOsdid
+    get:
+      description: OSD index.
+      operationId: getNodesCephOsdByNodeAndOsdid
+  /nodes/{node}/ceph/osd/{osdid}/in:
+    summary: in
+    post:
+      description: ceph osd in
+      operationId: newNodesCephOsdInByNodeAndOsdid
+  /nodes/{node}/ceph/osd/{osdid}/lv-info:
+    summary: lv-info
+    get:
+      description: Get OSD volume details
+      operationId: getNodesCephOsdLv-InfoByNodeAndOsdid
+  /nodes/{node}/ceph/osd/{osdid}/metadata:
+    summary: metadata
+    get:
+      description: Get OSD details
+      operationId: getNodesCephOsdMetadataByNodeAndOsdid
+  /nodes/{node}/ceph/osd/{osdid}/out:
+    summary: out
+    post:
+      description: ceph osd out
+      operationId: newNodesCephOsdOutByNodeAndOsdid
+  /nodes/{node}/ceph/osd/{osdid}/scrub:
+    summary: scrub
+    post:
+      description: Instruct the OSD to scrub.
+      operationId: newNodesCephOsdScrubByNodeAndOsdid
+  /nodes/{node}/ceph/pool:
+    summary: pool
+    get:
+      description: List all pools and their settings (which are settable by the POST/PUT endpoints).
+      operationId: getNodesCephPoolByNode
+    post:
+      description: Create Ceph pool
+      operationId: newNodesCephPoolByNode
+  /nodes/{node}/ceph/pool/{name}:
+    summary: name
+    delete:
+      description: Destroy pool
+      operationId: removeNodesCephPoolByNodeAndName
+    get:
+      description: Pool index.
+      operationId: getNodesCephPoolByNodeAndName
+    put:
+      description: Change POOL settings
+      operationId: setNodesCephPoolByNodeAndName
+  /nodes/{node}/ceph/pool/{name}/status:
+    summary: status
+    get:
+      description: Show the current pool status.
+      operationId: getNodesCephPoolStatusByNodeAndName
+  /nodes/{node}/ceph/restart:
+    summary: restart
+    post:
+      description: Restart ceph services.
+      operationId: newNodesCephRestartByNode
+  /nodes/{node}/ceph/rules:
+    summary: rules
+    get:
+      description: List ceph rules.
+      operationId: getNodesCephRulesByNode
+  /nodes/{node}/ceph/start:
+    summary: start
+    post:
+      description: Start ceph services.
+      operationId: newNodesCephStartByNode
+  /nodes/{node}/ceph/status:
+    summary: status
+    get:
+      description: Get ceph status.
+      operationId: getNodesCephStatusByNode
+  /nodes/{node}/ceph/stop:
+    summary: stop
+    post:
+      description: Stop ceph services.
+      operationId: newNodesCephStopByNode
+  /nodes/{node}/certificates:
+    summary: certificates
+    get:
+      description: Node index.
+      operationId: getNodesCertificatesByNode
+  /nodes/{node}/certificates/acme:
+    summary: acme
+    get:
+      description: ACME index.
+      operationId: getNodesCertificatesAcmeByNode
+  /nodes/{node}/certificates/acme/certificate:
+    summary: certificate
+    delete:
+      description: Revoke existing certificate from CA.
+      operationId: removeNodesCertificatesAcmeCertificateByNode
+    post:
+      description: Order a new certificate from ACME-compatible CA.
+      operationId: newNodesCertificatesAcmeCertificateByNode
+    put:
+      description: Renew existing certificate from CA.
+      operationId: setNodesCertificatesAcmeCertificateByNode
+  /nodes/{node}/certificates/custom:
+    summary: custom
+    delete:
+      description: DELETE custom certificate chain and key.
+      operationId: removeNodesCertificatesCustomByNode
+    post:
+      description: Upload or update custom certificate chain and key.
+      operationId: newNodesCertificatesCustomByNode
+  /nodes/{node}/certificates/info:
+    summary: info
+    get:
+      description: Get information about node's certificates.
+      operationId: getNodesCertificatesInfoByNode
+  /nodes/{node}/config:
+    summary: config
+    get:
+      description: Get node configuration options.
+      operationId: getNodesConfigByNode
+    put:
+      description: Set node configuration options.
+      operationId: setNodesConfigByNode
+  /nodes/{node}/disks:
+    summary: disks
+    get:
+      description: Node index.
+      operationId: getNodesDisksByNode
+  /nodes/{node}/disks/directory:
+    summary: directory
+    get:
+      description: PVE Managed Directory storages.
+      operationId: getNodesDisksDirectoryByNode
+    post:
+      description: Create a Filesystem on an unused disk. Will be mounted under '/mnt/pve/NAME'.
+      operationId: newNodesDisksDirectoryByNode
+  /nodes/{node}/disks/directory/{name}:
+    summary: name
+    delete:
+      description: Unmounts the storage and removes the mount unit.
+      operationId: removeNodesDisksDirectoryByNodeAndName
+  /nodes/{node}/disks/initgpt:
+    summary: initgpt
+    post:
+      description: Initialize Disk with GPT
+      operationId: newNodesDisksInitgptByNode
+  /nodes/{node}/disks/list:
+    summary: list
+    get:
+      description: List local disks.
+      operationId: getNodesDisksListByNode
+  /nodes/{node}/disks/lvm:
+    summary: lvm
+    get:
+      description: List LVM Volume Groups
+      operationId: getNodesDisksLvmByNode
+    post:
+      description: Create an LVM Volume Group
+      operationId: newNodesDisksLvmByNode
+  /nodes/{node}/disks/lvm/{name}:
+    summary: name
+    delete:
+      description: Remove an LVM Volume Group.
+      operationId: removeNodesDisksLvmByNodeAndName
+  /nodes/{node}/disks/lvmthin:
+    summary: lvmthin
+    get:
+      description: List LVM thinpools
+      operationId: getNodesDisksLvmthinByNode
+    post:
+      description: Create an LVM thinpool
+      operationId: newNodesDisksLvmthinByNode
+  /nodes/{node}/disks/lvmthin/{name}:
+    summary: name
+    delete:
+      description: Remove an LVM thin pool.
+      operationId: removeNodesDisksLvmthinByNodeAndName
+  /nodes/{node}/disks/smart:
+    summary: smart
+    get:
+      description: Get SMART Health of a disk.
+      operationId: getNodesDisksSmartByNode
+  /nodes/{node}/disks/wipedisk:
+    summary: wipedisk
+    put:
+      description: Wipe a disk or partition.
+      operationId: setNodesDisksWipediskByNode
+  /nodes/{node}/disks/zfs:
+    summary: zfs
+    get:
+      description: List Zpools.
+      operationId: getNodesDisksZfsByNode
+    post:
+      description: Create a ZFS pool.
+      operationId: newNodesDisksZfsByNode
+  /nodes/{node}/disks/zfs/{name}:
+    summary: name
+    delete:
+      description: Destroy a ZFS pool.
+      operationId: removeNodesDisksZfsByNodeAndName
+    get:
+      description: Get details about a zpool.
+      operationId: getNodesDisksZfsByNodeAndName
+  /nodes/{node}/dns:
+    summary: dns
+    get:
+      description: Read DNS settings.
+      operationId: getNodesDnsByNode
+    put:
+      description: Write DNS settings.
+      operationId: setNodesDnsByNode
+  /nodes/{node}/execute:
+    summary: execute
+    post:
+      description: Execute multiple commands in order, root only.
+      operationId: newNodesExecuteByNode
+  /nodes/{node}/firewall:
+    summary: firewall
+    get:
+      description: Directory index.
+      operationId: getNodesFirewallByNode
+  /nodes/{node}/firewall/log:
+    summary: log
+    get:
+      description: Read firewall log
+      operationId: getNodesFirewallLogByNode
+  /nodes/{node}/firewall/options:
+    summary: options
+    get:
+      description: Get host firewall options.
+      operationId: getNodesFirewallOptionsByNode
+    put:
+      description: Set Firewall options.
+      operationId: setNodesFirewallOptionsByNode
+  /nodes/{node}/firewall/rules:
+    summary: rules
+    get:
+      description: List rules.
+      operationId: getNodesFirewallRulesByNode
+    post:
+      description: Create new rule.
+      operationId: newNodesFirewallRulesByNode
+  /nodes/{node}/firewall/rules/{pos}:
+    summary: pos
+    delete:
+      description: Delete rule.
+      operationId: removeNodesFirewallRulesByNodeAndPos
+    get:
+      description: Get single rule data.
+      operationId: getNodesFirewallRulesByNodeAndPos
+    put:
+      description: Modify rule data.
+      operationId: setNodesFirewallRulesByNodeAndPos
+  /nodes/{node}/hardware:
+    summary: hardware
+    get:
+      description: Index of hardware types
+      operationId: getNodesHardwareByNode
+  /nodes/{node}/hardware/pci:
+    summary: pci
+    get:
+      description: List local PCI devices.
+      operationId: getNodesHardwarePciByNode
+  /nodes/{node}/hardware/pci/{pci-id-or-mapping}:
+    summary: pci-id-or-mapping
+    get:
+      description: Index of available pci methods
+      operationId: getNodesHardwarePciByNodeAndPci-Id-Or-Mapping
+  /nodes/{node}/hardware/pci/{pci-id-or-mapping}/mdev:
+    summary: mdev
+    get:
+      description: List mediated device types for given PCI device.
+      operationId: getNodesHardwarePciMdevByNodeAndPci-Id-Or-Mapping
+  /nodes/{node}/hardware/usb:
+    summary: usb
+    get:
+      description: List local USB devices.
+      operationId: getNodesHardwareUsbByNode
+  /nodes/{node}/hosts:
+    summary: hosts
+    get:
+      description: Get the content of /etc/hosts.
+      operationId: getNodesHostsByNode
+    post:
+      description: Write /etc/hosts.
+      operationId: newNodesHostsByNode
+  /nodes/{node}/journal:
+    summary: journal
+    get:
+      description: Read Journal
+      operationId: getNodesJournalByNode
+  /nodes/{node}/lxc:
+    summary: lxc
+    get:
+      description: LXC container index (per node).
+      operationId: getNodesLxcByNode
+    post:
+      description: Create or restore a container.
+      operationId: newNodesLxcByNode
+  /nodes/{node}/lxc/{vmid}:
+    summary: vmid
+    delete:
+      description: Destroy the container (also delete all uses files).
+      operationId: removeNodesLxcByNodeAndVmid
+    get:
+      description: Directory index
+      operationId: getNodesLxcByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/clone:
+    summary: clone
+    post:
+      description: Create a container clone/copy
+      operationId: newNodesLxcCloneByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/config:
+    summary: config
+    get:
+      description: Get container configuration.
+      operationId: getNodesLxcConfigByNodeAndVmid
+    put:
+      description: Set container options.
+      operationId: setNodesLxcConfigByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/feature:
+    summary: feature
+    get:
+      description: Check if feature for virtual machine is available.
+      operationId: getNodesLxcFeatureByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/firewall:
+    summary: firewall
+    get:
+      description: Directory index.
+      operationId: getNodesLxcFirewallByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/firewall/aliases:
+    summary: aliases
+    get:
+      description: List aliases
+      operationId: getNodesLxcFirewallAliasesByNodeAndVmid
+    post:
+      description: Create IP or Network Alias.
+      operationId: newNodesLxcFirewallAliasesByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/firewall/aliases/{name}:
+    summary: name
+    delete:
+      description: Remove IP or Network alias.
+      operationId: removeNodesLxcFirewallAliasesByNodeAndVmidAndName
+    get:
+      description: Read alias.
+      operationId: getNodesLxcFirewallAliasesByNodeAndVmidAndName
+    put:
+      description: Update IP or Network alias.
+      operationId: setNodesLxcFirewallAliasesByNodeAndVmidAndName
+  /nodes/{node}/lxc/{vmid}/firewall/ipset:
+    summary: ipset
+    get:
+      description: List IPSets
+      operationId: getNodesLxcFirewallIpsetByNodeAndVmid
+    post:
+      description: Create new IPSet
+      operationId: newNodesLxcFirewallIpsetByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/firewall/ipset/{name}:
+    summary: name
+    delete:
+      description: Delete IPSet
+      operationId: removeNodesLxcFirewallIpsetByNodeAndVmidAndName
+    get:
+      description: List IPSet content
+      operationId: getNodesLxcFirewallIpsetByNodeAndVmidAndName
+    post:
+      description: Add IP or Network to IPSet.
+      operationId: newNodesLxcFirewallIpsetByNodeAndVmidAndName
+  /nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}:
+    summary: cidr
+    delete:
+      description: Remove IP or Network from IPSet.
+      operationId: removeNodesLxcFirewallIpsetByNodeAndVmidAndNameAndCidr
+    get:
+      description: Read IP or Network settings from IPSet.
+      operationId: getNodesLxcFirewallIpsetByNodeAndVmidAndNameAndCidr
+    put:
+      description: Update IP or Network settings
+      operationId: setNodesLxcFirewallIpsetByNodeAndVmidAndNameAndCidr
+  /nodes/{node}/lxc/{vmid}/firewall/log:
+    summary: log
+    get:
+      description: Read firewall log
+      operationId: getNodesLxcFirewallLogByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/firewall/options:
+    summary: options
+    get:
+      description: Get VM firewall options.
+      operationId: getNodesLxcFirewallOptionsByNodeAndVmid
+    put:
+      description: Set Firewall options.
+      operationId: setNodesLxcFirewallOptionsByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/firewall/refs:
+    summary: refs
+    get:
+      description: Lists possible IPSet/Alias reference which are allowed in source/dest properties.
+      operationId: getNodesLxcFirewallRefsByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/firewall/rules:
+    summary: rules
+    get:
+      description: List rules.
+      operationId: getNodesLxcFirewallRulesByNodeAndVmid
+    post:
+      description: Create new rule.
+      operationId: newNodesLxcFirewallRulesByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/firewall/rules/{pos}:
+    summary: pos
+    delete:
+      description: Delete rule.
+      operationId: removeNodesLxcFirewallRulesByNodeAndVmidAndPos
+    get:
+      description: Get single rule data.
+      operationId: getNodesLxcFirewallRulesByNodeAndVmidAndPos
+    put:
+      description: Modify rule data.
+      operationId: setNodesLxcFirewallRulesByNodeAndVmidAndPos
+  /nodes/{node}/lxc/{vmid}/interfaces:
+    summary: interfaces
+    get:
+      description: Get IP addresses of the specified container interface.
+      operationId: getNodesLxcInterfacesByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/migrate:
+    summary: migrate
+    post:
+      description: Migrate the container to another node. Creates a new migration task.
+      operationId: newNodesLxcMigrateByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/move_volume:
+    summary: movevolume
+    post:
+      description: Move a rootfs-/mp-volume to a different storage or to a different container.
+      operationId: newNodesLxcMovevolumeByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/mtunnel:
+    summary: mtunnel
+    post:
+      description: Migration tunnel endpoint - only for internal use by CT migration.
+      operationId: newNodesLxcMtunnelByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/mtunnelwebsocket:
+    summary: mtunnelwebsocket
+    get:
+      description: Migration tunnel endpoint for websocket upgrade - only for internal use by VM migration.
+      operationId: getNodesLxcMtunnelwebsocketByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/pending:
+    summary: pending
+    get:
+      description: Get container configuration, including pending changes.
+      operationId: getNodesLxcPendingByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/remote_migrate:
+    summary: remotemigrate
+    post:
+      description: Migrate the container to another cluster. Creates a new migration task. EXPERIMENTAL feature!
+      operationId: newNodesLxcRemotemigrateByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/resize:
+    summary: resize
+    put:
+      description: Resize a container mount point.
+      operationId: setNodesLxcResizeByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/rrd:
+    summary: rrd
+    get:
+      description: Read VM RRD statistics (returns PNG)
+      operationId: getNodesLxcRrdByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/rrddata:
+    summary: rrddata
+    get:
+      description: Read VM RRD statistics
+      operationId: getNodesLxcRrddataByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/snapshot:
+    summary: snapshot
+    get:
+      description: List all snapshots.
+      operationId: getNodesLxcSnapshotByNodeAndVmid
+    post:
+      description: Snapshot a container.
+      operationId: newNodesLxcSnapshotByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/snapshot/{snapname}:
+    summary: snapname
+    delete:
+      description: Delete a LXC snapshot.
+      operationId: removeNodesLxcSnapshotByNodeAndVmidAndSnapname
+    get:
+      description: ""
+      operationId: getNodesLxcSnapshotByNodeAndVmidAndSnapname
+  /nodes/{node}/lxc/{vmid}/snapshot/{snapname}/config:
+    summary: config
+    get:
+      description: Get snapshot configuration
+      operationId: getNodesLxcSnapshotConfigByNodeAndVmidAndSnapname
+    put:
+      description: Update snapshot metadata.
+      operationId: setNodesLxcSnapshotConfigByNodeAndVmidAndSnapname
+  /nodes/{node}/lxc/{vmid}/snapshot/{snapname}/rollback:
+    summary: rollback
+    post:
+      description: Rollback LXC state to specified snapshot.
+      operationId: newNodesLxcSnapshotRollbackByNodeAndVmidAndSnapname
+  /nodes/{node}/lxc/{vmid}/spiceproxy:
+    summary: spiceproxy
+    post:
+      description: Returns a SPICE configuration to connect to the CT.
+      operationId: newNodesLxcSpiceproxyByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/status:
+    summary: status
+    get:
+      description: Directory index
+      operationId: getNodesLxcStatusByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/status/current:
+    summary: current
+    get:
+      description: Get virtual machine status.
+      operationId: getNodesLxcStatusCurrentByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/status/reboot:
+    summary: reboot
+    post:
+      description: Reboot the container by shutting it down, and starting it again. Applies pending changes.
+      operationId: newNodesLxcStatusRebootByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/status/resume:
+    summary: resume
+    post:
+      description: Resume the container.
+      operationId: newNodesLxcStatusResumeByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/status/shutdown:
+    summary: shutdown
+    post:
+      description: Shutdown the container. This will trigger a clean shutdown of the container, see lxc-stop(1) for details.
+      operationId: newNodesLxcStatusShutdownByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/status/start:
+    summary: start
+    post:
+      description: Start the container.
+      operationId: newNodesLxcStatusStartByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/status/stop:
+    summary: stop
+    post:
+      description: Stop the container. This will abruptly stop all processes running in the container.
+      operationId: newNodesLxcStatusStopByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/status/suspend:
+    summary: suspend
+    post:
+      description: Suspend the container. This is experimental.
+      operationId: newNodesLxcStatusSuspendByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/template:
+    summary: template
+    post:
+      description: Create a Template.
+      operationId: newNodesLxcTemplateByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/termproxy:
+    summary: termproxy
+    post:
+      description: Creates a TCP proxy connection.
+      operationId: newNodesLxcTermproxyByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/vncproxy:
+    summary: vncproxy
+    post:
+      description: Creates a TCP VNC proxy connections.
+      operationId: newNodesLxcVncproxyByNodeAndVmid
+  /nodes/{node}/lxc/{vmid}/vncwebsocket:
+    summary: vncwebsocket
+    get:
+      description: Opens a weksocket for VNC traffic.
+      operationId: getNodesLxcVncwebsocketByNodeAndVmid
+  /nodes/{node}/migrateall:
+    summary: migrateall
+    post:
+      description: Migrate all VMs and Containers.
+      operationId: newNodesMigrateallByNode
+  /nodes/{node}/netstat:
+    summary: netstat
+    get:
+      description: Read tap/vm network device interface counters
+      operationId: getNodesNetstatByNode
+  /nodes/{node}/network:
+    summary: network
+    delete:
+      description: Revert network configuration changes.
+      operationId: removeNodesNetworkByNode
+    get:
+      description: List available networks
+      operationId: getNodesNetworkByNode
+    post:
+      description: Create network device configuration
+      operationId: newNodesNetworkByNode
+    put:
+      description: Reload network configuration
+      operationId: setNodesNetworkByNode
+  /nodes/{node}/network/{iface}:
+    summary: iface
+    delete:
+      description: Delete network device configuration
+      operationId: removeNodesNetworkByNodeAndIface
+    get:
+      description: Read network device configuration
+      operationId: getNodesNetworkByNodeAndIface
+    put:
+      description: Update network device configuration
+      operationId: setNodesNetworkByNodeAndIface
+  /nodes/{node}/qemu:
+    summary: qemu
+    get:
+      description: Virtual machine index (per node).
+      operationId: getNodesQemuByNode
+    post:
+      description: Create or restore a virtual machine.
+      operationId: newNodesQemuByNode
+  /nodes/{node}/qemu/{vmid}:
+    summary: vmid
+    delete:
+      description: Destroy the VM and  all used/owned volumes. Removes any VM specific permissions and firewall rules
+      operationId: removeNodesQemuByNodeAndVmid
+    get:
+      description: Directory index
+      operationId: getNodesQemuByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent:
+    summary: agent
+    get:
+      description: QEMU Guest Agent command index.
+      operationId: getNodesQemuAgentByNodeAndVmid
+    post:
+      description: Execute QEMU Guest Agent commands.
+      operationId: newNodesQemuAgentByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/exec:
+    summary: exec
+    post:
+      description: Executes the given command in the vm via the guest-agent and returns an object with the pid.
+      operationId: newNodesQemuAgentExecByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/exec-status:
+    summary: exec-status
+    get:
+      description: Gets the status of the given pid started by the guest-agent
+      operationId: getNodesQemuAgentExec-StatusByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/file-read:
+    summary: file-read
+    get:
+      description: Reads the given file via guest agent. Is limited to 16777216 bytes.
+      operationId: getNodesQemuAgentFile-ReadByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/file-write:
+    summary: file-write
+    post:
+      description: Writes the given file via guest agent.
+      operationId: newNodesQemuAgentFile-WriteByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/fsfreeze-freeze:
+    summary: fsfreeze-freeze
+    post:
+      description: Execute fsfreeze-freeze.
+      operationId: newNodesQemuAgentFsfreeze-FreezeByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/fsfreeze-status:
+    summary: fsfreeze-status
+    post:
+      description: Execute fsfreeze-status.
+      operationId: newNodesQemuAgentFsfreeze-StatusByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/fsfreeze-thaw:
+    summary: fsfreeze-thaw
+    post:
+      description: Execute fsfreeze-thaw.
+      operationId: newNodesQemuAgentFsfreeze-ThawByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/fstrim:
+    summary: fstrim
+    post:
+      description: Execute fstrim.
+      operationId: newNodesQemuAgentFstrimByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/get-fsinfo:
+    summary: get-fsinfo
+    get:
+      description: Execute get-fsinfo.
+      operationId: getNodesQemuAgentGet-FsinfoByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/get-host-name:
+    summary: get-host-name
+    get:
+      description: Execute get-host-name.
+      operationId: getNodesQemuAgentGet-Host-NameByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/get-memory-block-info:
+    summary: get-memory-block-info
+    get:
+      description: Execute get-memory-block-info.
+      operationId: getNodesQemuAgentGet-Memory-Block-InfoByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/get-memory-blocks:
+    summary: get-memory-blocks
+    get:
+      description: Execute get-memory-blocks.
+      operationId: getNodesQemuAgentGet-Memory-BlocksByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/get-osinfo:
+    summary: get-osinfo
+    get:
+      description: Execute get-osinfo.
+      operationId: getNodesQemuAgentGet-OsinfoByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/get-time:
+    summary: get-time
+    get:
+      description: Execute get-time.
+      operationId: getNodesQemuAgentGet-TimeByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/get-timezone:
+    summary: get-timezone
+    get:
+      description: Execute get-timezone.
+      operationId: getNodesQemuAgentGet-TimezoneByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/get-users:
+    summary: get-users
+    get:
+      description: Execute get-users.
+      operationId: getNodesQemuAgentGet-UsersByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/get-vcpus:
+    summary: get-vcpus
+    get:
+      description: Execute get-vcpus.
+      operationId: getNodesQemuAgentGet-VcpusByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/info:
+    summary: info
+    get:
+      description: Execute info.
+      operationId: getNodesQemuAgentInfoByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/network-get-interfaces:
+    summary: network-get-interfaces
+    get:
+      description: Execute network-get-interfaces.
+      operationId: getNodesQemuAgentNetwork-Get-InterfacesByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/ping:
+    summary: ping
+    post:
+      description: Execute ping.
+      operationId: newNodesQemuAgentPingByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/set-user-password:
+    summary: set-user-password
+    post:
+      description: Sets the password for the given user to the given password
+      operationId: newNodesQemuAgentSet-User-PasswordByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/shutdown:
+    summary: shutdown
+    post:
+      description: Execute shutdown.
+      operationId: newNodesQemuAgentShutdownByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/suspend-disk:
+    summary: suspend-disk
+    post:
+      description: Execute suspend-disk.
+      operationId: newNodesQemuAgentSuspend-DiskByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/suspend-hybrid:
+    summary: suspend-hybrid
+    post:
+      description: Execute suspend-hybrid.
+      operationId: newNodesQemuAgentSuspend-HybridByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/agent/suspend-ram:
+    summary: suspend-ram
+    post:
+      description: Execute suspend-ram.
+      operationId: newNodesQemuAgentSuspend-RamByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/clone:
+    summary: clone
+    post:
+      description: Create a copy of virtual machine/template.
+      operationId: newNodesQemuCloneByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/cloudinit:
+    summary: cloudinit
+    get:
+      description: Get the cloudinit configuration with both current and pending values.
+      operationId: getNodesQemuCloudinitByNodeAndVmid
+    put:
+      description: Regenerate and change cloudinit config drive.
+      operationId: setNodesQemuCloudinitByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/cloudinit/dump:
+    summary: dump
+    get:
+      description: Get automatically generated cloudinit config.
+      operationId: getNodesQemuCloudinitDumpByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/config:
+    summary: config
+    get:
+      description: Get the virtual machine configuration with pending configuration changes applied. Set the 'current' parameter to get the current configuration instead.
+      operationId: getNodesQemuConfigByNodeAndVmid
+    post:
+      description: Set virtual machine options (asynchronous API).
+      operationId: newNodesQemuConfigByNodeAndVmid
+    put:
+      description: Set virtual machine options (synchronous API) - You should consider using the POST method instead for any actions involving hotplug or storage allocation.
+      operationId: setNodesQemuConfigByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/feature:
+    summary: feature
+    get:
+      description: Check if feature for virtual machine is available.
+      operationId: getNodesQemuFeatureByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/firewall:
+    summary: firewall
+    get:
+      description: Directory index.
+      operationId: getNodesQemuFirewallByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/firewall/aliases:
+    summary: aliases
+    get:
+      description: List aliases
+      operationId: getNodesQemuFirewallAliasesByNodeAndVmid
+    post:
+      description: Create IP or Network Alias.
+      operationId: newNodesQemuFirewallAliasesByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/firewall/aliases/{name}:
+    summary: name
+    delete:
+      description: Remove IP or Network alias.
+      operationId: removeNodesQemuFirewallAliasesByNodeAndVmidAndName
+    get:
+      description: Read alias.
+      operationId: getNodesQemuFirewallAliasesByNodeAndVmidAndName
+    put:
+      description: Update IP or Network alias.
+      operationId: setNodesQemuFirewallAliasesByNodeAndVmidAndName
+  /nodes/{node}/qemu/{vmid}/firewall/ipset:
+    summary: ipset
+    get:
+      description: List IPSets
+      operationId: getNodesQemuFirewallIpsetByNodeAndVmid
+    post:
+      description: Create new IPSet
+      operationId: newNodesQemuFirewallIpsetByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/firewall/ipset/{name}:
+    summary: name
+    delete:
+      description: Delete IPSet
+      operationId: removeNodesQemuFirewallIpsetByNodeAndVmidAndName
+    get:
+      description: List IPSet content
+      operationId: getNodesQemuFirewallIpsetByNodeAndVmidAndName
+    post:
+      description: Add IP or Network to IPSet.
+      operationId: newNodesQemuFirewallIpsetByNodeAndVmidAndName
+  /nodes/{node}/qemu/{vmid}/firewall/ipset/{name}/{cidr}:
+    summary: cidr
+    delete:
+      description: Remove IP or Network from IPSet.
+      operationId: removeNodesQemuFirewallIpsetByNodeAndVmidAndNameAndCidr
+    get:
+      description: Read IP or Network settings from IPSet.
+      operationId: getNodesQemuFirewallIpsetByNodeAndVmidAndNameAndCidr
+    put:
+      description: Update IP or Network settings
+      operationId: setNodesQemuFirewallIpsetByNodeAndVmidAndNameAndCidr
+  /nodes/{node}/qemu/{vmid}/firewall/log:
+    summary: log
+    get:
+      description: Read firewall log
+      operationId: getNodesQemuFirewallLogByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/firewall/options:
+    summary: options
+    get:
+      description: Get VM firewall options.
+      operationId: getNodesQemuFirewallOptionsByNodeAndVmid
+    put:
+      description: Set Firewall options.
+      operationId: setNodesQemuFirewallOptionsByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/firewall/refs:
+    summary: refs
+    get:
+      description: Lists possible IPSet/Alias reference which are allowed in source/dest properties.
+      operationId: getNodesQemuFirewallRefsByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/firewall/rules:
+    summary: rules
+    get:
+      description: List rules.
+      operationId: getNodesQemuFirewallRulesByNodeAndVmid
+    post:
+      description: Create new rule.
+      operationId: newNodesQemuFirewallRulesByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/firewall/rules/{pos}:
+    summary: pos
+    delete:
+      description: Delete rule.
+      operationId: removeNodesQemuFirewallRulesByNodeAndVmidAndPos
+    get:
+      description: Get single rule data.
+      operationId: getNodesQemuFirewallRulesByNodeAndVmidAndPos
+    put:
+      description: Modify rule data.
+      operationId: setNodesQemuFirewallRulesByNodeAndVmidAndPos
+  /nodes/{node}/qemu/{vmid}/migrate:
+    summary: migrate
+    get:
+      description: Get preconditions for migration.
+      operationId: getNodesQemuMigrateByNodeAndVmid
+    post:
+      description: Migrate virtual machine. Creates a new migration task.
+      operationId: newNodesQemuMigrateByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/monitor:
+    summary: monitor
+    post:
+      description: Execute QEMU monitor commands.
+      operationId: newNodesQemuMonitorByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/move_disk:
+    summary: movedisk
+    post:
+      description: Move volume to different storage or to a different VM.
+      operationId: newNodesQemuMovediskByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/mtunnel:
+    summary: mtunnel
+    post:
+      description: Migration tunnel endpoint - only for internal use by VM migration.
+      operationId: newNodesQemuMtunnelByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/mtunnelwebsocket:
+    summary: mtunnelwebsocket
+    get:
+      description: Migration tunnel endpoint for websocket upgrade - only for internal use by VM migration.
+      operationId: getNodesQemuMtunnelwebsocketByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/pending:
+    summary: pending
+    get:
+      description: Get the virtual machine configuration with both current and pending values.
+      operationId: getNodesQemuPendingByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/remote_migrate:
+    summary: remotemigrate
+    post:
+      description: Migrate virtual machine to a remote cluster. Creates a new migration task. EXPERIMENTAL feature!
+      operationId: newNodesQemuRemotemigrateByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/resize:
+    summary: resize
+    put:
+      description: Extend volume size.
+      operationId: setNodesQemuResizeByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/rrd:
+    summary: rrd
+    get:
+      description: Read VM RRD statistics (returns PNG)
+      operationId: getNodesQemuRrdByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/rrddata:
+    summary: rrddata
+    get:
+      description: Read VM RRD statistics
+      operationId: getNodesQemuRrddataByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/sendkey:
+    summary: sendkey
+    put:
+      description: Send key event to virtual machine.
+      operationId: setNodesQemuSendkeyByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/snapshot:
+    summary: snapshot
+    get:
+      description: List all snapshots.
+      operationId: getNodesQemuSnapshotByNodeAndVmid
+    post:
+      description: Snapshot a VM.
+      operationId: newNodesQemuSnapshotByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/snapshot/{snapname}:
+    summary: snapname
+    delete:
+      description: Delete a VM snapshot.
+      operationId: removeNodesQemuSnapshotByNodeAndVmidAndSnapname
+    get:
+      description: ""
+      operationId: getNodesQemuSnapshotByNodeAndVmidAndSnapname
+  /nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config:
+    summary: config
+    get:
+      description: Get snapshot configuration
+      operationId: getNodesQemuSnapshotConfigByNodeAndVmidAndSnapname
+    put:
+      description: Update snapshot metadata.
+      operationId: setNodesQemuSnapshotConfigByNodeAndVmidAndSnapname
+  /nodes/{node}/qemu/{vmid}/snapshot/{snapname}/rollback:
+    summary: rollback
+    post:
+      description: Rollback VM state to specified snapshot.
+      operationId: newNodesQemuSnapshotRollbackByNodeAndVmidAndSnapname
+  /nodes/{node}/qemu/{vmid}/spiceproxy:
+    summary: spiceproxy
+    post:
+      description: Returns a SPICE configuration to connect to the VM.
+      operationId: newNodesQemuSpiceproxyByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/status:
+    summary: status
+    get:
+      description: Directory index
+      operationId: getNodesQemuStatusByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/status/current:
+    summary: current
+    get:
+      description: Get virtual machine status.
+      operationId: getNodesQemuStatusCurrentByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/status/reboot:
+    summary: reboot
+    post:
+      description: Reboot the VM by shutting it down, and starting it again. Applies pending changes.
+      operationId: newNodesQemuStatusRebootByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/status/reset:
+    summary: reset
+    post:
+      description: Reset virtual machine.
+      operationId: newNodesQemuStatusResetByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/status/resume:
+    summary: resume
+    post:
+      description: Resume virtual machine.
+      operationId: newNodesQemuStatusResumeByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/status/shutdown:
+    summary: shutdown
+    post:
+      description: Shutdown virtual machine. This is similar to pressing the power button on a physical machine. This will send an ACPI event for the guest OS, which should then proceed to a clean shutdown.
+      operationId: newNodesQemuStatusShutdownByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/status/start:
+    summary: start
+    post:
+      description: Start virtual machine.
+      operationId: newNodesQemuStatusStartByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/status/stop:
+    summary: stop
+    post:
+      description: Stop virtual machine. The qemu process will exit immediately. This is akin to pulling the power plug of a running computer and may damage the VM data.
+      operationId: newNodesQemuStatusStopByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/status/suspend:
+    summary: suspend
+    post:
+      description: Suspend virtual machine.
+      operationId: newNodesQemuStatusSuspendByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/template:
+    summary: template
+    post:
+      description: Create a Template.
+      operationId: newNodesQemuTemplateByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/termproxy:
+    summary: termproxy
+    post:
+      description: Creates a TCP proxy connections.
+      operationId: newNodesQemuTermproxyByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/unlink:
+    summary: unlink
+    put:
+      description: Unlink/delete disk images.
+      operationId: setNodesQemuUnlinkByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/vncproxy:
+    summary: vncproxy
+    post:
+      description: Creates a TCP VNC proxy connections.
+      operationId: newNodesQemuVncproxyByNodeAndVmid
+  /nodes/{node}/qemu/{vmid}/vncwebsocket:
+    summary: vncwebsocket
+    get:
+      description: Opens a weksocket for VNC traffic.
+      operationId: getNodesQemuVncwebsocketByNodeAndVmid
+  /nodes/{node}/query-url-metadata:
+    summary: query-url-metadata
+    get:
+      description: 'Query metadata of an URL: file size, file name and mime type.'
+      operationId: getNodesQuery-Url-MetadataByNode
+  /nodes/{node}/replication:
+    summary: replication
+    get:
+      description: List status of all replication jobs on this node.
+      operationId: getNodesReplicationByNode
+  /nodes/{node}/replication/{id}:
+    summary: id
+    get:
+      description: Directory index.
+      operationId: getNodesReplicationByNodeAndId
+  /nodes/{node}/replication/{id}/log:
+    summary: log
+    get:
+      description: Read replication job log.
+      operationId: getNodesReplicationLogByNodeAndId
+  /nodes/{node}/replication/{id}/schedule_now:
+    summary: schedulenow
+    post:
+      description: Schedule replication job to start as soon as possible.
+      operationId: newNodesReplicationSchedulenowByNodeAndId
+  /nodes/{node}/replication/{id}/status:
+    summary: status
+    get:
+      description: Get replication job status.
+      operationId: getNodesReplicationStatusByNodeAndId
+  /nodes/{node}/report:
+    summary: report
+    get:
+      description: Gather various systems information about a node
+      operationId: getNodesReportByNode
+  /nodes/{node}/rrd:
+    summary: rrd
+    get:
+      description: Read node RRD statistics (returns PNG)
+      operationId: getNodesRrdByNode
+  /nodes/{node}/rrddata:
+    summary: rrddata
+    get:
+      description: Read node RRD statistics
+      operationId: getNodesRrddataByNode
+  /nodes/{node}/scan:
+    summary: scan
+    get:
+      description: Index of available scan methods
+      operationId: getNodesScanByNode
+  /nodes/{node}/scan/cifs:
+    summary: cifs
+    get:
+      description: Scan remote CIFS server.
+      operationId: getNodesScanCifsByNode
+  /nodes/{node}/scan/glusterfs:
+    summary: glusterfs
+    get:
+      description: Scan remote GlusterFS server.
+      operationId: getNodesScanGlusterfsByNode
+  /nodes/{node}/scan/iscsi:
+    summary: iscsi
+    get:
+      description: Scan remote iSCSI server.
+      operationId: getNodesScanIscsiByNode
+  /nodes/{node}/scan/lvm:
+    summary: lvm
+    get:
+      description: List local LVM volume groups.
+      operationId: getNodesScanLvmByNode
+  /nodes/{node}/scan/lvmthin:
+    summary: lvmthin
+    get:
+      description: List local LVM Thin Pools.
+      operationId: getNodesScanLvmthinByNode
+  /nodes/{node}/scan/nfs:
+    summary: nfs
+    get:
+      description: Scan remote NFS server.
+      operationId: getNodesScanNfsByNode
+  /nodes/{node}/scan/pbs:
+    summary: pbs
+    get:
+      description: Scan remote Proxmox Backup Server.
+      operationId: getNodesScanPbsByNode
+  /nodes/{node}/scan/zfs:
+    summary: zfs
+    get:
+      description: Scan zfs pool list on local node.
+      operationId: getNodesScanZfsByNode
+  /nodes/{node}/sdn:
+    summary: sdn
+    get:
+      description: SDN index.
+      operationId: getNodesSdnByNode
+  /nodes/{node}/sdn/zones:
+    summary: zones
+    get:
+      description: Get status for all zones.
+      operationId: getNodesSdnZonesByNode
+  /nodes/{node}/sdn/zones/{zone}:
+    summary: zone
+    get:
+      description: ""
+      operationId: getNodesSdnZonesByNodeAndZone
+  /nodes/{node}/sdn/zones/{zone}/content:
+    summary: content
+    get:
+      description: List zone content.
+      operationId: getNodesSdnZonesContentByNodeAndZone
+  /nodes/{node}/services:
+    summary: services
+    get:
+      description: Service list.
+      operationId: getNodesServicesByNode
+  /nodes/{node}/services/{service}:
+    summary: service
+    get:
+      description: Directory index
+      operationId: getNodesServicesByNodeAndService
+  /nodes/{node}/services/{service}/reload:
+    summary: reload
+    post:
+      description: Reload service. Falls back to restart if service cannot be reloaded.
+      operationId: newNodesServicesReloadByNodeAndService
+  /nodes/{node}/services/{service}/restart:
+    summary: restart
+    post:
+      description: Hard restart service. Use reload if you want to reduce interruptions.
+      operationId: newNodesServicesRestartByNodeAndService
+  /nodes/{node}/services/{service}/start:
+    summary: start
+    post:
+      description: Start service.
+      operationId: newNodesServicesStartByNodeAndService
+  /nodes/{node}/services/{service}/state:
+    summary: state
+    get:
+      description: Read service properties
+      operationId: getNodesServicesStateByNodeAndService
+  /nodes/{node}/services/{service}/stop:
+    summary: stop
+    post:
+      description: Stop service.
+      operationId: newNodesServicesStopByNodeAndService
+  /nodes/{node}/spiceshell:
+    summary: spiceshell
+    post:
+      description: Creates a SPICE shell.
+      operationId: newNodesSpiceshellByNode
+  /nodes/{node}/startall:
+    summary: startall
+    post:
+      description: Start all VMs and containers located on this node (by default only those with onboot=1).
+      operationId: newNodesStartallByNode
+  /nodes/{node}/status:
+    summary: status
+    get:
+      description: Read node status
+      operationId: getNodesStatusByNode
+    post:
+      description: Reboot or shutdown a node.
+      operationId: newNodesStatusByNode
+  /nodes/{node}/stopall:
+    summary: stopall
+    post:
+      description: Stop all VMs and Containers.
+      operationId: newNodesStopallByNode
+  /nodes/{node}/storage:
+    summary: storage
+    get:
+      description: Get status for all datastores.
+      operationId: getNodesStorageByNode
+  /nodes/{node}/storage/{storage}:
+    summary: storage
+    get:
+      description: ""
+      operationId: getNodesStorageByNodeAndStorage
+  /nodes/{node}/storage/{storage}/content:
+    summary: content
+    get:
+      description: List storage content.
+      operationId: getNodesStorageContentByNodeAndStorage
+    post:
+      description: Allocate disk images.
+      operationId: newNodesStorageContentByNodeAndStorage
+  /nodes/{node}/storage/{storage}/content/{volume}:
+    summary: volume
+    delete:
+      description: Delete volume
+      operationId: removeNodesStorageContentByNodeAndStorageAndVolume
+    get:
+      description: Get volume attributes
+      operationId: getNodesStorageContentByNodeAndStorageAndVolume
+    post:
+      description: Copy a volume. This is experimental code - do not use.
+      operationId: newNodesStorageContentByNodeAndStorageAndVolume
+    put:
+      description: Update volume attributes
+      operationId: setNodesStorageContentByNodeAndStorageAndVolume
+  /nodes/{node}/storage/{storage}/download-url:
+    summary: download-url
+    post:
+      description: Download templates, ISO images and OVAs by using an URL.
+      operationId: newNodesStorageDownload-UrlByNodeAndStorage
+  /nodes/{node}/storage/{storage}/file-restore:
+    summary: file-restore
+  /nodes/{node}/storage/{storage}/file-restore/download:
+    summary: download
+    get:
+      description: Extract a file or directory (as zip archive) from a PBS backup.
+      operationId: getNodesStorageFile-RestoreDownloadByNodeAndStorage
+  /nodes/{node}/storage/{storage}/file-restore/list:
+    summary: list
+    get:
+      description: List files and directories for single file restore under the given path.
+      operationId: getNodesStorageFile-RestoreListByNodeAndStorage
+  /nodes/{node}/storage/{storage}/import-metadata:
+    summary: import-metadata
+    get:
+      description: Get the base parameters for creating a guest which imports data from a foreign importable guest, like an ESXi VM
+      operationId: getNodesStorageImport-MetadataByNodeAndStorage
+  /nodes/{node}/storage/{storage}/prunebackups:
+    summary: prunebackups
+    delete:
+      description: Prune backups. Only those using the standard naming scheme are considered.
+      operationId: removeNodesStoragePrunebackupsByNodeAndStorage
+    get:
+      description: 'Get prune information for backups. NOTE: this is only a preview and might not be what a subsequent prune call does if backups are removed/added in the meantime.'
+      operationId: getNodesStoragePrunebackupsByNodeAndStorage
+  /nodes/{node}/storage/{storage}/rrd:
+    summary: rrd
+    get:
+      description: Read storage RRD statistics (returns PNG).
+      operationId: getNodesStorageRrdByNodeAndStorage
+  /nodes/{node}/storage/{storage}/rrddata:
+    summary: rrddata
+    get:
+      description: Read storage RRD statistics.
+      operationId: getNodesStorageRrddataByNodeAndStorage
+  /nodes/{node}/storage/{storage}/status:
+    summary: status
+    get:
+      description: Read storage status.
+      operationId: getNodesStorageStatusByNodeAndStorage
+  /nodes/{node}/storage/{storage}/upload:
+    summary: upload
+    post:
+      description: Upload templates, ISO images and OVAs.
+      operationId: newNodesStorageUploadByNodeAndStorage
+  /nodes/{node}/subscription:
+    summary: subscription
+    delete:
+      description: Delete subscription key of this node.
+      operationId: removeNodesSubscriptionByNode
+    get:
+      description: Read subscription info.
+      operationId: getNodesSubscriptionByNode
+    post:
+      description: Update subscription info.
+      operationId: newNodesSubscriptionByNode
+    put:
+      description: Set subscription key.
+      operationId: setNodesSubscriptionByNode
+  /nodes/{node}/suspendall:
+    summary: suspendall
+    post:
+      description: Suspend all VMs.
+      operationId: newNodesSuspendallByNode
+  /nodes/{node}/syslog:
+    summary: syslog
+    get:
+      description: Read system log
+      operationId: getNodesSyslogByNode
+  /nodes/{node}/tasks:
+    summary: tasks
+    get:
+      description: Read task list for one node (finished tasks).
+      operationId: getNodesTasksByNode
+  /nodes/{node}/tasks/{upid}:
+    summary: upid
+    delete:
+      description: Stop a task.
+      operationId: removeNodesTasksByNodeAndUpid
+    get:
+      description: ""
+      operationId: getNodesTasksByNodeAndUpid
+  /nodes/{node}/tasks/{upid}/log:
+    summary: log
+    get:
+      description: Read task log.
+      operationId: getNodesTasksLogByNodeAndUpid
+  /nodes/{node}/tasks/{upid}/status:
+    summary: status
+    get:
+      description: Read task status.
+      operationId: getNodesTasksStatusByNodeAndUpid
+  /nodes/{node}/termproxy:
+    summary: termproxy
+    post:
+      description: Creates a VNC Shell proxy.
+      operationId: newNodesTermproxyByNode
+  /nodes/{node}/time:
+    summary: time
+    get:
+      description: Read server time and time zone settings.
+      operationId: getNodesTimeByNode
+    put:
+      description: Set time zone.
+      operationId: setNodesTimeByNode
+  /nodes/{node}/version:
+    summary: version
+    get:
+      description: API version details
+      operationId: getNodesVersionByNode
+  /nodes/{node}/vncshell:
+    summary: vncshell
+    post:
+      description: Creates a VNC Shell proxy.
+      operationId: newNodesVncshellByNode
+  /nodes/{node}/vncwebsocket:
+    summary: vncwebsocket
+    get:
+      description: Opens a websocket for VNC traffic.
+      operationId: getNodesVncwebsocketByNode
+  /nodes/{node}/vzdump:
+    summary: vzdump
+    post:
+      description: Create backup.
+      operationId: newNodesVzdumpByNode
+  /nodes/{node}/vzdump/defaults:
+    summary: defaults
+    get:
+      description: Get the currently configured vzdump defaults.
+      operationId: getNodesVzdumpDefaultsByNode
+  /nodes/{node}/vzdump/extractconfig:
+    summary: extractconfig
+    get:
+      description: Extract configuration from vzdump backup archive.
+      operationId: getNodesVzdumpExtractconfigByNode
+  /nodes/{node}/wakeonlan:
+    summary: wakeonlan
+    post:
+      description: Try to wake a node via 'wake on LAN' network packet.
+      operationId: newNodesWakeonlanByNode
+  /pools:
+    summary: pools
+    delete:
+      description: Delete pool.
+      operationId: removePools
+    get:
+      description: List pools or get pool configuration.
+      operationId: getPools
+    post:
+      description: Create new pool.
+      operationId: newPools
+    put:
+      description: Update pool.
+      operationId: setPools
+  /pools/{poolid}:
+    summary: poolid
+    delete:
+      description: Delete pool (deprecated, no support for nested pools, use 'DELETE /pools/?poolid={poolid}').
+      operationId: removePoolsByPoolid
+    get:
+      description: Get pool configuration (deprecated, no support for nested pools, use 'GET /pools/?poolid={poolid}').
+      operationId: getPoolsByPoolid
+    put:
+      description: Update pool data (deprecated, no support for nested pools - use 'PUT /pools/?poolid={poolid}' instead).
+      operationId: setPoolsByPoolid
+  /storage:
+    summary: storage
+    get:
+      description: Storage index.
+      operationId: getStorage
+    post:
+      description: Create a new storage.
+      operationId: newStorage
+  /storage/{storage}:
+    summary: storage
+    delete:
+      description: Delete storage configuration.
+      operationId: removeStorageByStorage
+    get:
+      description: Read storage configuration.
+      operationId: getStorageByStorage
+    put:
+      description: Update storage configuration.
+      operationId: setStorageByStorage
+  /version:
+    summary: version
+    get:
+      description: API version details, including some parts of the global datacenter config.
+      operationId: getVersion
+
