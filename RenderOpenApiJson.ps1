@@ -76,7 +76,7 @@ function New-OpenApiPathItemObject() {
         $Schema
     )
     $PathItemObject = [PSCustomObject]@{
-        summary = $Schema.text
+        summary = ($Schema.text  -replace "{|}|_","")
     }
     foreach ($method in (Get-Member -MemberType NoteProperty -InputObject $Schema.info).Name) {
         $AddObject = [PSCustomObject]@{
