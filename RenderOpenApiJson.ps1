@@ -108,6 +108,12 @@ foreach ($Path in $AllSchemaPaths) {
         $OperationObjectName += (Get-Culture).TextInfo.ToTitleCase($Part.Replace('_',''))
     }
 
+    $ByOrAnd = "By"
+    foreach($Part in $Path.path.Split('/').Where({ $_ -match "{|}" }) ){
+        $OperationObjectName += $ByOrAnd + (Get-Culture).TextInfo.ToTitleCase(($Part -replace "{|}|_",""))
+        $ByOrAnd = "And"
+    }
+
     foreach($Method in (Get-Member -MemberType NoteProperty -InputObject $Path.info).Name){
         $Path.info.($Method).name = "{0}{1}" -f $operationsMappingTable[$Method],$OperationObjectName
     }
@@ -122,7 +128,7 @@ foreach ($SchemaPath in ($AllSchemaPaths | Sort-Object -Property path)) {
 }
 
 $OpenApiSchema = [PSCustomObject]@{
-    openapi = "3.1.0"
+    openapi = "3.1.1"
     info    = [PSCustomObject]@{
         title          = "Proxmox VE Module 1.0"
         summary        = "Module to access Proxmox VE Api"
