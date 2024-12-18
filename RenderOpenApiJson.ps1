@@ -103,6 +103,17 @@ function New-OpenApiPathItemObject() {
                             description = $Schema.info.($Method).parameters.properties.($Parameter).description
                             required    = $true
                         })
+                }else{
+                    <#
+                     # not working properly at this point... need to look how to determine if it's parameter or request body :(
+                     # TODO: create requestBody :)
+                    [void]$ParameterList.Add([PSCustomObject]@{
+                        name        = $Parameter
+                        in          = "query"
+                        description = $Schema.info.($Method).parameters.properties.($Parameter).description
+                        required    = ($Schema.info.($Method).parameters.properties.name.optional -eq 1 ? $false : $true)
+                    })
+                    #>
                 }
             }
         }
