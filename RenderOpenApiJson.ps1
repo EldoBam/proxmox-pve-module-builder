@@ -7,9 +7,9 @@
 
 # call apidoc.js from proxmox, the apidoc.js contains the schema of the api
 # this is the point to start at :)
-$ApiDescriptionJs = Invoke-WebRequest -Uri "https://pve.proxmox.com/pve-docs/api-viewer/apidoc.js" -ContentType "text/javascript"
-# damn dirty things :) let's get the json content from variable declaration, I hope proxmox won't change this.
-$ApiSchema = $ApiDescriptionJs.Content[18..($ApiDescriptionJs.Content.IndexOf("let method2cmd = {") - 4)] -join '' | ConvertFrom-Json
+$ApiDescriptionJs = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/proxmox/pve-docs/refs/heads/master/api-viewer/apidata.js" -ContentType "text/javascript"
+# damn dirty things :) let's get the json content from variable declaration
+$ApiSchema = $ApiDescriptionJs.Content[18..($ApiDescriptionJs.Content.Length - 4)] -join '' | ConvertFrom-Json
 
 # creating mapping table for operationId, what will be used to render the modules
 $OperationsMappingTable = @{
@@ -67,7 +67,6 @@ function Get-PathObjectFromSchema {
         $PathObject | Add-Member -MemberType NoteProperty -Name 
     }
 }
-
 # function to create an open api path item object
 # https://swagger.io/specification/#path-item-object
 function New-OpenApiPathItemObject() {
@@ -80,14 +79,39 @@ function New-OpenApiPathItemObject() {
         # setting summary to text
         # TODO: improve summary
         # $Schema.text only contains the last part of the path e.g. hardware, firewall, {vmid} or {name}...
-        summary = ($Schema.text  -replace "{|}|_","")
+        summary = ($Schema.text -replace "{|}|_", "")
     }
+
+    # creating tag for this path, easily take the first art of the path. e.g.: /cluster/backup/{id}/included_volumes => cluster
+    # TODO: improve tag handling
+    $Tag = $Schema.path.Split('/')[1]
+
     # iteratiing through the methods and build the operation objects
     # https://swagger.io/specification/#operation-object
-    foreach ($Method in (Get-Member -MemberType NoteProperty -InputObject $Schema.info).Name) {
+    foreach ($Method in (Get-Member -MemberType NoteProperty -InputObject $Schema.info -ErrorAction Stop).Name) {
+        # creating parameters object
+        $ParameterList = [System.Collections.ArrayList]@()
+
+        if ($Schema.info.($Method).parameters.properties) {
+            # iterating through the parameters in current method
+            foreach ($Parameter in (Get-Member -MemberType NoteProperty -InputObject $Schema.info.($Method).parameters.properties).Name) {
+                # first step only add the path parameters to schema
+                if ($Schema.path.Split("/") -contains "{$Parameter}") {
+                    [void]$ParameterList.Add([PSCustomObject]@{
+                            name        = $Parameter
+                            in          = "path"
+                            description = $Schema.info.($Method).parameters.properties.($Parameter).description
+                            required    = $true
+                        })
+                }
+            }
+        }
+
         $OperationObject = [PSCustomObject]@{
+            tags        = @($Tag)
             description = $Schema.info.($Method).description
             operationId = $Schema.info.($Method).name
+            parameter   = [array]$ParameterList
         }
         # add each operation object to the path item object
         $PathItemObject | Add-Member -MemberType NoteProperty -Name $Method.ToLower() -Value $OperationObject
@@ -114,9 +138,9 @@ foreach ($Path in $AllSchemaPaths) {
     # creating the operation object name
     $OperationObjectName = ""
     # adding each part of the path, which arent variable names
-    foreach($Part in $Path.path.Split('/').Where({ $_ -and $_ -notmatch "{|}" })){
+    foreach ($Part in $Path.path.Split('/').Where({ $_ -and $_ -notmatch "{|}" })) {
         # in TitleCase and without under_scores :)
-        $OperationObjectName += (Get-Culture).TextInfo.ToTitleCase($Part.Replace('_',''))
+        $OperationObjectName += (Get-Culture).TextInfo.ToTitleCase($Part.Replace('_', ''))
     }
 
     # for the uniqueness of the operationId I've decided to add every path variable to the OperationName as a "ByAnd"-clause.
@@ -127,14 +151,14 @@ foreach ($Path in $AllSchemaPaths) {
     # ==> possible operationIds: getAccessUsersTokenByUseridAndTokenid, setAccessUsersTokenByUseridAndTokenid, 
     #                            removeAccessUsersTokenByUseridAndTokenid, newAccessUsersTokenByUseridAndTokenid
     $ByOrAnd = "By"
-    foreach($Part in $Path.path.Split('/').Where({ $_ -match "{|}" }) ){
-        $OperationObjectName += $ByOrAnd + (Get-Culture).TextInfo.ToTitleCase(($Part -replace "{|}|_",""))
+    foreach ($Part in $Path.path.Split('/').Where({ $_ -match "{|}" }) ) {
+        $OperationObjectName += $ByOrAnd + (Get-Culture).TextInfo.ToTitleCase(($Part -replace "{|}|_", ""))
         $ByOrAnd = "And"
     }
 
     # setting the new operationId into the name field, which will be used later.
-    foreach($Method in (Get-Member -MemberType NoteProperty -InputObject $Path.info).Name){
-        $Path.info.($Method).name = "{0}{1}" -f $OperationsMappingTable[$Method],$OperationObjectName
+    foreach ($Method in (Get-Member -MemberType NoteProperty -InputObject $Path.info).Name) {
+        $Path.info.($Method).name = "{0}{1}" -f $OperationsMappingTable[$Method], $OperationObjectName
     }
     
 }
@@ -142,10 +166,26 @@ foreach ($Path in $AllSchemaPaths) {
 # create openApi paths object
 # https://swagger.io/specification/#paths-object
 $OpenApiPathsObject = [PSCustomObject]@{}
-# adding all the pasths to the object
-foreach ($SchemaPath in ($AllSchemaPaths | Sort-Object -Property path)) {
+# adding all the paths to the object
+foreach ($SchemaPath in ($AllSchemaPaths.Where({ $_.info }) | Sort-Object -Property path)) {
     $OpenApiPathsObject | Add-Member -MemberType NoteProperty -Name $SchemaPath.path -Value (New-OpenApiPathItemObject -Schema $SchemaPath)
 }
+
+# collectiing all objects and putting them into openapi components...
+# https://swagger.io/specification/#components-object
+# damn hard stuff :) let's just start putting all methods into a flat list, so we can work better on it
+$allMethods = [System.Collections.ArrayList]@()
+foreach ($Path in $AllSchemaPaths) {
+    foreach ($Method in (Get-Member -MemberType NoteProperty -InputObject $Path.info).Name) {
+        [void]$allMethods.Add([PSCustomObject]@{
+                path   = $Path.path
+                method = $Method
+                schema = $Path.info.($Method)
+            })
+    }
+}
+
+$allObjectSchemas = $allMethods.Where({ $_.schema.returns.type -contains "object" })
 
 # building open api schema 3.1.1
 # https://swagger.io/specification/#schema-1
@@ -161,13 +201,13 @@ $OpenApiSchema = [PSCustomObject]@{
             url   = ""
             email = ""
         }
-        version = "0.1"
+        version        = "0.1"
         #licence        = [PSCustomObject]@{
         #    name       = ""
         #    identifier = ""
         #}
     }
-    paths          = $OpenApiPathsObject
+    paths   = $OpenApiPathsObject
     #components     = 
     #tags
     #externalDocs
