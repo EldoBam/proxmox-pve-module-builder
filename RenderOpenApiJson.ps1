@@ -151,7 +151,7 @@ foreach ($Path in $AllSchemaPaths) {
     # adding each part of the path, which arent variable names
     foreach ($Part in $Path.path.Split('/').Where({ $_ -and $_ -notmatch "{|}" })) {
         # in TitleCase and without under_scores :)
-        $OperationObjectName += (Get-Culture).TextInfo.ToTitleCase($Part.Replace('_', ''))
+        $OperationObjectName += (Get-Culture).TextInfo.ToTitleCase(($Part -replace "_|-", ''))
     }
 
     # for the uniqueness of the operationId I've decided to add every path variable to the OperationName as a "ByAnd"-clause.
@@ -163,7 +163,7 @@ foreach ($Path in $AllSchemaPaths) {
     #                            removeAccessUsersTokenByUseridAndTokenid, newAccessUsersTokenByUseridAndTokenid
     $ByOrAnd = "By"
     foreach ($Part in $Path.path.Split('/').Where({ $_ -match "{|}" }) ) {
-        $OperationObjectName += $ByOrAnd + (Get-Culture).TextInfo.ToTitleCase(($Part -replace "{|}|_", ""))
+        $OperationObjectName += $ByOrAnd + (Get-Culture).TextInfo.ToTitleCase(($Part -replace "{|}|_|-", ""))
         $ByOrAnd = "And"
     }
 
