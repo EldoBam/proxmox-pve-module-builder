@@ -88,7 +88,7 @@ function New-OpenApiPathItemObject() {
 
     # iteratiing through the methods and build the operation objects
     # https://swagger.io/specification/#operation-object
-    foreach ($Method in (Get-Member -MemberType NoteProperty -InputObject $Schema.info -ErrorAction Stop).Name) {
+    foreach ($Method in (Get-Member -MemberType NoteProperty -InputObject $Schema.info).Name) {
         # creating parameters object
         $ParameterList = [System.Collections.ArrayList]@()
 
