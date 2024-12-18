@@ -150,7 +150,7 @@ paths:
       tags:
       - access
       description: Get the OpenId Authorization Url for the specified realm.
-      operationId: newAccessOpenidAuth-Url
+      operationId: newAccessOpenidAuthurl
       parameter: []
   /access/openid/login:
     summary: login
@@ -444,7 +444,7 @@ paths:
       tags:
       - access
       description: Unlock a user's TFA authentication.
-      operationId: setAccessUsersUnlock-TfaByUserid
+      operationId: setAccessUsersUnlocktfaByUserid
       parameter:
       - name: userid
         in: path
@@ -518,7 +518,7 @@ paths:
       tags:
       - cluster
       description: Get schema of ACME challenge types.
-      operationId: getClusterAcmeChallenge-Schema
+      operationId: getClusterAcmeChallengeschema
       parameter: []
   /cluster/acme/directories:
     summary: directories
@@ -610,7 +610,7 @@ paths:
       tags:
       - cluster
       description: Index for backup info related endpoints
-      operationId: getClusterBackup-Info
+      operationId: getClusterBackupinfo
       parameter: []
   /cluster/backup-info/not-backed-up:
     summary: not-backed-up
@@ -618,7 +618,7 @@ paths:
       tags:
       - cluster
       description: Shows all guests which are not covered by any backup job.
-      operationId: getClusterBackup-InfoNot-Backed-Up
+      operationId: getClusterBackupinfoNotbackedup
       parameter: []
   /cluster/backup/{id}:
     summary: id
@@ -1278,7 +1278,7 @@ paths:
       tags:
       - cluster
       description: List configured realm-sync-jobs.
-      operationId: getClusterJobsRealm-Sync
+      operationId: getClusterJobsRealmsync
       parameter: []
   /cluster/jobs/realm-sync/{id}:
     summary: id
@@ -1286,7 +1286,7 @@ paths:
       tags:
       - cluster
       description: Delete realm-sync job definition.
-      operationId: removeClusterJobsRealm-SyncById
+      operationId: removeClusterJobsRealmsyncById
       parameter:
       - name: id
         in: path
@@ -1296,7 +1296,7 @@ paths:
       tags:
       - cluster
       description: Read realm-sync job definition.
-      operationId: getClusterJobsRealm-SyncById
+      operationId: getClusterJobsRealmsyncById
       parameter:
       - name: id
         in: path
@@ -1306,7 +1306,7 @@ paths:
       tags:
       - cluster
       description: Create new realm-sync job.
-      operationId: newClusterJobsRealm-SyncById
+      operationId: newClusterJobsRealmsyncById
       parameter:
       - name: id
         in: path
@@ -1316,7 +1316,7 @@ paths:
       tags:
       - cluster
       description: Update realm-sync job definition.
-      operationId: setClusterJobsRealm-SyncById
+      operationId: setClusterJobsRealmsyncById
       parameter:
       - name: id
         in: path
@@ -1328,7 +1328,7 @@ paths:
       tags:
       - cluster
       description: Returns a list of future schedule runtimes.
-      operationId: getClusterJobsSchedule-Analyze
+      operationId: getClusterJobsScheduleanalyze
       parameter: []
   /cluster/log:
     summary: log
@@ -1718,7 +1718,7 @@ paths:
       tags:
       - cluster
       description: Returns known notification metadata fields and their known values
-      operationId: getClusterNotificationsMatcher-Field-Values
+      operationId: getClusterNotificationsMatcherfieldvalues
       parameter: []
   /cluster/notifications/matcher-fields:
     summary: matcher-fields
@@ -1726,7 +1726,7 @@ paths:
       tags:
       - cluster
       description: Returns known notification metadata fields
-      operationId: getClusterNotificationsMatcher-Fields
+      operationId: getClusterNotificationsMatcherfields
       parameter: []
   /cluster/notifications/matchers:
     summary: matchers
@@ -2578,7 +2578,7 @@ paths:
       tags:
       - nodes
       description: Heuristical check if it is safe to perform an action.
-      operationId: getNodesCephCmd-SafetyByNode
+      operationId: getNodesCephCmdsafetyByNode
       parameter:
       - name: node
         in: path
@@ -2848,7 +2848,7 @@ paths:
       tags:
       - nodes
       description: Get OSD volume details
-      operationId: getNodesCephOsdLv-InfoByNodeAndOsdid
+      operationId: getNodesCephOsdLvinfoByNodeAndOsdid
       parameter:
       - name: node
         in: path
@@ -3562,7 +3562,7 @@ paths:
       tags:
       - nodes
       description: Index of available pci methods
-      operationId: getNodesHardwarePciByNodeAndPci-Id-Or-Mapping
+      operationId: getNodesHardwarePciByNodeAndPciidormapping
       parameter:
       - name: node
         in: path
@@ -3578,7 +3578,7 @@ paths:
       tags:
       - nodes
       description: List mediated device types for given PCI device.
-      operationId: getNodesHardwarePciMdevByNodeAndPci-Id-Or-Mapping
+      operationId: getNodesHardwarePciMdevByNodeAndPciidormapping
       parameter:
       - name: node
         in: path
@@ -4860,7 +4860,7 @@ paths:
       tags:
       - nodes
       description: Gets the status of the given pid started by the guest-agent
-      operationId: getNodesQemuAgentExec-StatusByNodeAndVmid
+      operationId: getNodesQemuAgentExecstatusByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -4876,7 +4876,7 @@ paths:
       tags:
       - nodes
       description: Reads the given file via guest agent. Is limited to 16777216 bytes.
-      operationId: getNodesQemuAgentFile-ReadByNodeAndVmid
+      operationId: getNodesQemuAgentFilereadByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -4892,7 +4892,7 @@ paths:
       tags:
       - nodes
       description: Writes the given file via guest agent.
-      operationId: newNodesQemuAgentFile-WriteByNodeAndVmid
+      operationId: newNodesQemuAgentFilewriteByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -4908,7 +4908,7 @@ paths:
       tags:
       - nodes
       description: Execute fsfreeze-freeze.
-      operationId: newNodesQemuAgentFsfreeze-FreezeByNodeAndVmid
+      operationId: newNodesQemuAgentFsfreezefreezeByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -4924,7 +4924,7 @@ paths:
       tags:
       - nodes
       description: Execute fsfreeze-status.
-      operationId: newNodesQemuAgentFsfreeze-StatusByNodeAndVmid
+      operationId: newNodesQemuAgentFsfreezestatusByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -4940,7 +4940,7 @@ paths:
       tags:
       - nodes
       description: Execute fsfreeze-thaw.
-      operationId: newNodesQemuAgentFsfreeze-ThawByNodeAndVmid
+      operationId: newNodesQemuAgentFsfreezethawByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -4972,7 +4972,7 @@ paths:
       tags:
       - nodes
       description: Execute get-fsinfo.
-      operationId: getNodesQemuAgentGet-FsinfoByNodeAndVmid
+      operationId: getNodesQemuAgentGetfsinfoByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -4988,7 +4988,7 @@ paths:
       tags:
       - nodes
       description: Execute get-host-name.
-      operationId: getNodesQemuAgentGet-Host-NameByNodeAndVmid
+      operationId: getNodesQemuAgentGethostnameByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -5004,7 +5004,7 @@ paths:
       tags:
       - nodes
       description: Execute get-memory-block-info.
-      operationId: getNodesQemuAgentGet-Memory-Block-InfoByNodeAndVmid
+      operationId: getNodesQemuAgentGetmemoryblockinfoByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -5020,7 +5020,7 @@ paths:
       tags:
       - nodes
       description: Execute get-memory-blocks.
-      operationId: getNodesQemuAgentGet-Memory-BlocksByNodeAndVmid
+      operationId: getNodesQemuAgentGetmemoryblocksByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -5036,7 +5036,7 @@ paths:
       tags:
       - nodes
       description: Execute get-osinfo.
-      operationId: getNodesQemuAgentGet-OsinfoByNodeAndVmid
+      operationId: getNodesQemuAgentGetosinfoByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -5052,7 +5052,7 @@ paths:
       tags:
       - nodes
       description: Execute get-time.
-      operationId: getNodesQemuAgentGet-TimeByNodeAndVmid
+      operationId: getNodesQemuAgentGettimeByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -5068,7 +5068,7 @@ paths:
       tags:
       - nodes
       description: Execute get-timezone.
-      operationId: getNodesQemuAgentGet-TimezoneByNodeAndVmid
+      operationId: getNodesQemuAgentGettimezoneByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -5084,7 +5084,7 @@ paths:
       tags:
       - nodes
       description: Execute get-users.
-      operationId: getNodesQemuAgentGet-UsersByNodeAndVmid
+      operationId: getNodesQemuAgentGetusersByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -5100,7 +5100,7 @@ paths:
       tags:
       - nodes
       description: Execute get-vcpus.
-      operationId: getNodesQemuAgentGet-VcpusByNodeAndVmid
+      operationId: getNodesQemuAgentGetvcpusByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -5132,7 +5132,7 @@ paths:
       tags:
       - nodes
       description: Execute network-get-interfaces.
-      operationId: getNodesQemuAgentNetwork-Get-InterfacesByNodeAndVmid
+      operationId: getNodesQemuAgentNetworkgetinterfacesByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -5164,7 +5164,7 @@ paths:
       tags:
       - nodes
       description: Sets the password for the given user to the given password
-      operationId: newNodesQemuAgentSet-User-PasswordByNodeAndVmid
+      operationId: newNodesQemuAgentSetuserpasswordByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -5196,7 +5196,7 @@ paths:
       tags:
       - nodes
       description: Execute suspend-disk.
-      operationId: newNodesQemuAgentSuspend-DiskByNodeAndVmid
+      operationId: newNodesQemuAgentSuspenddiskByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -5212,7 +5212,7 @@ paths:
       tags:
       - nodes
       description: Execute suspend-hybrid.
-      operationId: newNodesQemuAgentSuspend-HybridByNodeAndVmid
+      operationId: newNodesQemuAgentSuspendhybridByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -5228,7 +5228,7 @@ paths:
       tags:
       - nodes
       description: Execute suspend-ram.
-      operationId: newNodesQemuAgentSuspend-RamByNodeAndVmid
+      operationId: newNodesQemuAgentSuspendramByNodeAndVmid
       parameter:
       - name: node
         in: path
@@ -6326,7 +6326,7 @@ paths:
       tags:
       - nodes
       description: 'Query metadata of an URL: file size, file name and mime type.'
-      operationId: getNodesQuery-Url-MetadataByNode
+      operationId: getNodesQueryurlmetadataByNode
       parameter:
       - name: node
         in: path
@@ -6912,7 +6912,7 @@ paths:
       tags:
       - nodes
       description: Download templates, ISO images and OVAs by using an URL.
-      operationId: newNodesStorageDownload-UrlByNodeAndStorage
+      operationId: newNodesStorageDownloadurlByNodeAndStorage
       parameter:
       - name: node
         in: path
@@ -6928,7 +6928,7 @@ paths:
       tags:
       - nodes
       description: Extract a file or directory (as zip archive) from a PBS backup.
-      operationId: getNodesStorageFile-RestoreDownloadByNodeAndStorage
+      operationId: getNodesStorageFilerestoreDownloadByNodeAndStorage
       parameter:
       - name: node
         in: path
@@ -6944,7 +6944,7 @@ paths:
       tags:
       - nodes
       description: List files and directories for single file restore under the given path.
-      operationId: getNodesStorageFile-RestoreListByNodeAndStorage
+      operationId: getNodesStorageFilerestoreListByNodeAndStorage
       parameter:
       - name: node
         in: path
@@ -6960,7 +6960,7 @@ paths:
       tags:
       - nodes
       description: Get the base parameters for creating a guest which imports data from a foreign importable guest, like an ESXi VM
-      operationId: getNodesStorageImport-MetadataByNodeAndStorage
+      operationId: getNodesStorageImportmetadataByNodeAndStorage
       parameter:
       - name: node
         in: path
