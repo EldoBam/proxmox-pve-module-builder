@@ -95,7 +95,7 @@ function New-OpenApiPathItemObject() {
         if ($Schema.info.($Method).parameters.properties) {
             # iterating through the parameters in current method
             foreach ($Parameter in (Get-Member -MemberType NoteProperty -InputObject $Schema.info.($Method).parameters.properties).Name) {
-                # first step only add the path parameters to schema
+                # only add the path parameters to schema
                 if ($Schema.path.Split("/") -contains "{$Parameter}") {
                     [void]$ParameterList.Add([PSCustomObject]@{
                             name        = $Parameter
@@ -103,17 +103,6 @@ function New-OpenApiPathItemObject() {
                             description = $Schema.info.($Method).parameters.properties.($Parameter).description
                             required    = $true
                         })
-                }else{
-                    <#
-                     # not working properly at this point... need to look how to determine if it's parameter or request body :(
-                     # TODO: create requestBody :)
-                    [void]$ParameterList.Add([PSCustomObject]@{
-                        name        = $Parameter
-                        in          = "query"
-                        description = $Schema.info.($Method).parameters.properties.($Parameter).description
-                        required    = ($Schema.info.($Method).parameters.properties.name.optional -eq 1 ? $false : $true)
-                    })
-                    #>
                 }
             }
         }
@@ -141,7 +130,6 @@ foreach ($DocPath in $ApiSchema) {
 # and sort them by path
 $AllSchemaPaths = $AllSchemaPaths | Sort-Object -Property path
 
-# the most trickiest and funniest part in this project :)
 # we need to build the operationId for each path. The proxmox api schema provide some, but they're not 
 # very consistent in their naming scheme and the names aren't unique :(
 foreach ($Path in $AllSchemaPaths) {
@@ -192,11 +180,81 @@ foreach ($Path in $AllSchemaPaths) {
                 path   = $Path.path
                 method = $Method
                 schema = $Path.info.($Method)
+                objectName = ($Path.info.GET.name -replace "^(get|set|new|remove)").Split("By")[0]
             })
     }
 }
 
-$allObjectSchemas = $allMethods.Where({ $_.schema.returns.type -contains "object" })
+# the most trickiest and funniest part in this project ᕕ(⌐■_■)ᕗ ♪♬
+# first build all schemas unique, the trick behind is first to collect all object schemas from all 
+# GET responses and hopefully can use them for the other methods as considered by the OpenAPI specifications. 
+# After that we're able to handle the other methods and responses. The proxmox api desciption doesn't use a proper object description
+# so it's also neccessary to check if the object with the properties already exists from another path...
+# we also don't have the object names from the api schema so we need to compare by properties
+
+
+# PS> ($allMethods.schema.returns.type | Select -Unique) -join ", "  
+# array, null, string, object, boolean, integer, any
+# those are the return types to handle let's start with the objects, which have properties
+$allObjects = [System.Collections.ArrayList]@()
+foreach ($Method in $allMethods.Where({ $_.method -eq "GET" -and $_.schema.returns.type -eq "object" -and $_.schema.returns.properties })) {
+    $objectSchema = [PSCustomObject]@{
+        type       = "object"
+        properties = [PSCustomObject]::new()
+    }
+    foreach($PropertyName in ($Method.schema.returns.properties | gm -MemberType NoteProperty).Name){
+        $Property = $method.schema.returns.properties.($PropertyName)
+        switch($Property.type){
+            # adding string parameter to object
+            { $_ -eq "string" } {
+                $addObj = [PSCustomObject]{type = "string"}
+                if($Property.maxLength){
+                    $addObj | Add-Member -MemberType NoteProperty -Name maxLength -Value $Property.maxLength
+                }
+                if($Property.pattern){
+                    $addObj | Add-Member -MemberType NoteProperty -Name pattern -Value $Property.pattern
+                }
+                # adding the format as described in https://swagger.io/docs/specification/v3_0/data-models/data-types/#strings
+                # "Tools can use the format to validate the input or to map the value to a specific type in the chosen programming language. 
+                # Tools that do not support a specific format may default back to the type alone, as if the format is not specified."
+                if($Property.format){
+                    $addObj | Add-Member -MemberType NoteProperty -Name format -Value $Property.format
+                }
+                $objectSchema.properties | Add-Member -MemberType NoteProperty -Name $PropertyName -Value $addObj
+                break
+            }
+            { $_ -eq "boolean" } {
+                break
+            }
+            # adding boolean parameter to the object
+            # we must define it as a integer 
+            default {
+                Write-Warning ("Unhandled Property Type $($_) didn't add it to component object")
+            }
+        }
+    }
+    $addObject = [PSCustomObject]@{
+        name = $_.objectName
+        schema =""
+    }
+}
+
+# creating the components-object
+<#
+$ComponentsObject = [PSCustomObject]@{
+    schemas = 
+    responses = 
+    parameters = 
+    examples
+    requestBodies
+    headers
+    securitySchemes
+    links
+    callbacks
+    pathItems
+}
+#>
+
 
 # building open api schema 3.1.1
 # https://swagger.io/specification/#schema-1
@@ -218,6 +276,7 @@ $OpenApiSchema = [PSCustomObject]@{
         #    identifier = ""
         #}
     }
+    jsonSchemaDialect = "https://spec.openapis.org/oas/3.1/dialect/base"
     paths   = $OpenApiPathsObject
     #components     = 
     #tags
