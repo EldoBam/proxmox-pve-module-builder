@@ -45,28 +45,6 @@ function Get-AllPathsRecursiveFromSchema {
     $PathList
 }
 
-# function to create a openApi path object
-# https://swagger.io/specification/#path-item-object
-function Get-PathObjectFromSchema {
-    param (
-        [Object[]]
-        $Schema
-    )
-    # creating PSCustomObject
-    $PathObject = [PSCustomObject]@{}
-
-    # create the path object foreach
-    # iterate through the note properties
-    foreach ($Info in ($Schema.info | Get-Member -MemberType NoteProperty).Name) {
-        $OperationObject = [PSCustomObject]@{
-            tags         = $Schema.path.Split('/')[0]
-            description  = $Schema.info.($info).description
-            externalDocs = "#TODO: implement"
-            operationId  = $Schema.info.($info).name
-        }
-        $PathObject | Add-Member -MemberType NoteProperty -Name 
-    }
-}
 # function to create an open api path item object
 # https://swagger.io/specification/#path-item-object
 function New-OpenApiPathItemObject() {
@@ -75,7 +53,7 @@ function New-OpenApiPathItemObject() {
         $Schema
     )
     # creating path item object with summary
-    $PathItemObject = [PSCustomObject]@{
+    $PathItemObject = @{
         # setting summary to text
         # TODO: improve summary
         # $Schema.text only contains the last part of the path e.g. hardware, firewall, {vmid} or {name}...
@@ -107,17 +85,16 @@ function New-OpenApiPathItemObject() {
             }
         }
 
-        $OperationObject = [PSCustomObject]@{
+        # add the current operation object to the path item object
+        $PathItemObject[$Method.ToLower()] = [PSCustomObject]@{
             tags        = @($Tag)
             description = $Schema.info.($Method).description
             operationId = $Schema.info.($Method).name
             parameter   = [array]$ParameterList
         }
-        # add each operation object to the path item object
-        $PathItemObject | Add-Member -MemberType NoteProperty -Name $Method.ToLower() -Value $OperationObject
     }
-    # return the object
-    $PathItemObject
+    # return the object while typecasting it to a PSCustomObject
+    [PSCustomObject]$PathItemObject
 }
 
 # putting all recursive paths into a flat list
@@ -164,11 +141,12 @@ foreach ($Path in $AllSchemaPaths) {
 
 # create openApi paths object
 # https://swagger.io/specification/#paths-object
-$OpenApiPathsObject = [PSCustomObject]@{}
+$OpenApiPathsObject = @{}
 # adding all the paths to the object
 foreach ($SchemaPath in ($AllSchemaPaths.Where({ $_.info }) | Sort-Object -Property path)) {
-    $OpenApiPathsObject | Add-Member -MemberType NoteProperty -Name $SchemaPath.path -Value (New-OpenApiPathItemObject -Schema $SchemaPath)
+    $OpenApiPathsObject[$SchemaPath.path] = (New-OpenApiPathItemObject -Schema $SchemaPath)
 }
+$OpenApiPathsObject = [PSCustomObject]$OpenApiPathsObject
 
 # collectiing all objects and putting them into openapi components...
 # https://swagger.io/specification/#components-object
@@ -204,23 +182,24 @@ foreach ($Method in $allMethods.Where({ $_.method -eq "GET" -and $_.schema.retur
     }
     foreach($PropertyName in ($Method.schema.returns.properties | gm -MemberType NoteProperty).Name){
         $Property = $method.schema.returns.properties.($PropertyName)
+        $propertiesHT = @{}
         switch($Property.type){
             # adding string parameter to object
             { $_ -eq "string" } {
-                $addObj = [PSCustomObject]{type = "string"}
+                $addObj = @{type = "string"}
                 if($Property.maxLength){
-                    $addObj | Add-Member -MemberType NoteProperty -Name maxLength -Value $Property.maxLength
+                    $addObj["maxLength"] = $Property.maxLength
                 }
                 if($Property.pattern){
-                    $addObj | Add-Member -MemberType NoteProperty -Name pattern -Value $Property.pattern
+                    $addObj["pattern"] = $Property.pattern
                 }
                 # adding the format as described in https://swagger.io/docs/specification/v3_0/data-models/data-types/#strings
                 # "Tools can use the format to validate the input or to map the value to a specific type in the chosen programming language. 
                 # Tools that do not support a specific format may default back to the type alone, as if the format is not specified."
                 if($Property.format){
-                    $addObj | Add-Member -MemberType NoteProperty -Name format -Value $Property.format
+                    $addObj["format"] = $Property.format
                 }
-                $objectSchema.properties | Add-Member -MemberType NoteProperty -Name $PropertyName -Value $addObj
+                $propertiesHT[$PropertyName] = ([PSCustomObject]$addObj)
                 break
             }
             { $_ -eq "boolean" } {

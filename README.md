@@ -12,7 +12,7 @@ Once we have a working module, it will be published via [PS Gallery](https://www
 - create PowerShell modules via OpenAPI Generator
 
 ## files
-RenderOpenApiJson.ps1
+- RenderOpenApiJson.ps1
 
 ## dependencies and exensions
 - [powershell-yaml](https://github.com/cloudbase/powershell-yaml) - neccessary if you want to copy the generated code into swaggereditor
