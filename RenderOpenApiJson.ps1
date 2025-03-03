@@ -173,7 +173,7 @@ function New-ObjectSchemaFromProperties() {
             # we must define it as a integer 
             default {
                 Write-Warning ("Unhandled Property Type $($_) didn't add it to component object")
-                $tmp.Add($Property)
+                #$tmp.Add($Property)
             }
         }
     }
