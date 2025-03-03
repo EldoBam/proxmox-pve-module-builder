@@ -8,6 +8,7 @@
 # call apidoc.js from proxmox, the apidoc.js contains the schema of the api
 # this is the point to start at :)
 $ApiDescriptionJs = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/proxmox/pve-docs/refs/heads/master/api-viewer/apidata.js" -ContentType "text/javascript"
+
 # damn dirty things :) let's get the json content from variable declaration
 $ApiSchema = $ApiDescriptionJs.Content[18..($ApiDescriptionJs.Content.Length - 4)] -join '' | ConvertFrom-Json
 
@@ -25,7 +26,6 @@ function Get-AllPathsRecursiveFromSchema {
         [Object[]]
         $Schema
     )
-
     # creating an ArrayList where all the paths are stored flat
     $PathList = [System.Collections.ArrayList]@()
     # put the object into the pathlist and exclude the children property
@@ -89,8 +89,19 @@ function New-OpenApiPathItemObject() {
         $PathItemObject[$Method.ToLower()] = [PSCustomObject]@{
             tags        = @($Tag)
             description = $Schema.info.($Method).description
+            summary     = $Schema.info.($Method).description
             operationId = $Schema.info.($Method).name
             parameter   = [array]$ParameterList
+            responses   = [PSCustomObject]@{
+                200 = [PSCustomObject]@{
+                    description = ""
+                    content     = [PSCustomObject]@{
+                        "application/json" = [PSCustomObject]@{
+                            schema = ""
+                        }
+                    }
+                }
+            }
         }
     }
     # return the object while typecasting it to a PSCustomObject
@@ -133,18 +144,20 @@ foreach ($Path in $AllSchemaPaths) {
     }
 
     # setting the new operationId into the name field, which will be used later.
-    foreach ($Method in (Get-Member -MemberType NoteProperty -InputObject $Path.info).Name) {
-        $Path.info.($Method).name = "{0}{1}" -f $OperationsMappingTable[$Method], $OperationObjectName
+    if ($Path.info) {
+        foreach ($Method in (Get-Member -MemberType NoteProperty -InputObject $Path.info).Name) {
+            $Path.info.($Method).name = "{0}{1}" -f $OperationsMappingTable[$Method], $OperationObjectName
+        }
     }
     
 }
 
 # create openApi paths object
 # https://swagger.io/specification/#paths-object
-$OpenApiPathsObject = @{}
+$OpenApiPathsObject = [PSCustomObject]@{}
 # adding all the paths to the object
 foreach ($SchemaPath in ($AllSchemaPaths.Where({ $_.info }) | Sort-Object -Property path)) {
-    $OpenApiPathsObject[$SchemaPath.path] = (New-OpenApiPathItemObject -Schema $SchemaPath)
+    $OpenApiPathsObject | Add-Member -MemberType NoteProperty -Name $SchemaPath.path -Value (New-OpenApiPathItemObject -Schema $SchemaPath)
 }
 $OpenApiPathsObject = [PSCustomObject]$OpenApiPathsObject
 
@@ -153,13 +166,15 @@ $OpenApiPathsObject = [PSCustomObject]$OpenApiPathsObject
 # damn hard stuff :) let's just start putting all methods into a flat list, so we can work better on it
 $allMethods = [System.Collections.ArrayList]@()
 foreach ($Path in $AllSchemaPaths) {
-    foreach ($Method in (Get-Member -MemberType NoteProperty -InputObject $Path.info).Name) {
-        [void]$allMethods.Add([PSCustomObject]@{
-                path   = $Path.path
-                method = $Method
-                schema = $Path.info.($Method)
-                objectName = ($Path.info.GET.name -replace "^(get|set|new|remove)").Split("By")[0]
-            })
+    if ($Path.info) {
+        foreach ($Method in (Get-Member -MemberType NoteProperty -InputObject $Path.info).Name) {
+            [void]$allMethods.Add([PSCustomObject]@{
+                    path       = $Path.path
+                    method     = $Method
+                    schema     = $Path.info.($Method)
+                    objectName = ($Path.info.GET.name -replace "^(get|set|new|remove)").Split("By")[0]
+                })
+        }
     }
 }
 
@@ -170,52 +185,117 @@ foreach ($Path in $AllSchemaPaths) {
 # so it's also neccessary to check if the object with the properties already exists from another path...
 # we also don't have the object names from the api schema so we need to compare by properties
 
-
-# PS> ($allMethods.schema.returns.type | Select -Unique) -join ", "  
-# array, null, string, object, boolean, integer, any
-# those are the return types to handle let's start with the objects, which have properties
-$allObjects = [System.Collections.ArrayList]@()
+<# just some code to do some research on $allProperties while coding
+$allProperties = [System.Collections.ArrayList]@()
 foreach ($Method in $allMethods.Where({ $_.method -eq "GET" -and $_.schema.returns.type -eq "object" -and $_.schema.returns.properties })) {
+    foreach($PropertyName in ($Method.schema.returns.properties | gm -MemberType NoteProperty).Name){
+        [void]$allProperties.Add([PSCustomObject]@{
+            PropertyName = $PropertyName
+            Property = $method.schema.returns.properties.($PropertyName)
+            Path = $Method.path
+            Method = $Method.method
+            ObjectName = $Method.objectName
+        })
+    }
+}
+#>
+
+function New-ObjectSchemaFromProperties() {
+    param (
+        [PSCustomObject]
+        $PropertiesSchema
+    )
+
+    # create object schema
     $objectSchema = [PSCustomObject]@{
         type       = "object"
-        properties = [PSCustomObject]::new()
+        properties = ""
     }
-    foreach($PropertyName in ($Method.schema.returns.properties | gm -MemberType NoteProperty).Name){
-        $Property = $method.schema.returns.properties.($PropertyName)
-        $propertiesHT = @{}
-        switch($Property.type){
+    # loop PropertyName from Get-Member
+    foreach ($PropertyName in ($PropertiesSchema | Get-Member -MemberType NoteProperty).Name) {
+        # get Property from schema
+        $Property = $PropertiesSchema.($PropertyName)
+        # create Hashtables
+        $properties = @{}
+        $addObj = @{}
+        # adding supported JSON schema keywords to openapi model
+        # https://swagger.io/docs/specification/v3_0/data-models/keywords/
+        ('title', 'pattern', 'required', 'enum', 'minimum', 'maximum', 'exclusiveMinimum', 'exclusiveMaximum',
+        'multipleOf', 'minLength', 'maxLength', 'minItems', 'maxItems', 'uniqueItems',
+        'minProperties', 'maxProperties').ForEach({
+                if ($Property.($_)) {
+                    $addObj[$_] = $Property.($_)
+                }
+            })
+        $addObj["type"] = $Property.type
+        switch ($Property.type) {
             # adding string parameter to object
-            { $_ -eq "string" } {
-                $addObj = @{type = "string"}
-                if($Property.maxLength){
-                    $addObj["maxLength"] = $Property.maxLength
-                }
-                if($Property.pattern){
-                    $addObj["pattern"] = $Property.pattern
-                }
-                # adding the format as described in https://swagger.io/docs/specification/v3_0/data-models/data-types/#strings
-                # "Tools can use the format to validate the input or to map the value to a specific type in the chosen programming language. 
-                # Tools that do not support a specific format may default back to the type alone, as if the format is not specified."
-                if($Property.format){
-                    $addObj["format"] = $Property.format
-                }
-                $propertiesHT[$PropertyName] = ([PSCustomObject]$addObj)
+            { $_ -match "string|number|integer" } {
+                $properties[$PropertyName] = ([PSCustomObject]$addObj)
                 break
             }
             { $_ -eq "boolean" } {
+                $addObj["minimum"] = 0
+                $addObj["maximum"] = 1
+                $addObj["format"] = "int32"
+                $properties[$PropertyName] = ([PSCustomObject]$addObj)
+                break
+            }
+            { $_ -match "array" } {
+                #$addObj["items"] = $Property.items
+                if ($Property.items) {
+                    ($Property.items | Get-Member -MemberType NoteProperty).ForEach({
+                            #TODO: implement items
+                        })
+                }
+                $properties[$PropertyName] = ([PSCustomObject]$addObj)
+                break
+            }
+            { $_ -match "object" } {
+                if ($Property.properties) {
+                    $addObj["properties"] = $Property.properties
+                }
+                if ($Property.additionalProperties) {
+                    $addObj["properties"] = $Property.additionalProperties.properties
+                }
+                $properties[$PropertyName] = ([PSCustomObject]$addObj)
                 break
             }
             # adding boolean parameter to the object
             # we must define it as a integer 
             default {
                 Write-Warning ("Unhandled Property Type $($_) didn't add it to component object")
+                $tmp.Add($Property)
             }
         }
     }
-    $addObject = [PSCustomObject]@{
-        name = $_.objectName
-        schema =""
+    $objectSchema.properties = $properties
+    # return object schema
+    [PSCustomObject]@{
+        type       = "object"
+        properties = [PSCustomObject]$properties
     }
+}
+
+# PS> ($allMethods.schema.returns.type | Select -Unique) -join ", "  
+# array, null, string, object, boolean, integer, any
+# those are the return types to handle let's start with the objects, which have properties
+$allObjects = [System.Collections.ArrayList]@()
+foreach ($Method in $allMethods.Where({ $_.method -eq "GET" -and $_.schema.returns.type -eq "object" -and $_.schema.returns.properties })) {
+ 
+    [void]$allObjects.Add([PSCustomObject]@{
+            path         = $Method.path
+            method       = $Method.method
+            objectSchema = (New-ObjectSchemaFromProperties -PropertiesSchema $Method.schema.returns.properties)
+            objectName   = "$($Method.objectName)"
+        })
+}
+
+$ComponentsSchemas = @{}
+foreach ($object in $allObjects) {
+    $OpenApiPathsObject.($object.path).get.responses."200".description = $allSchemaPaths.Where({ $_.path -eq $object.path }).info.GET.description
+    $OpenApiPathsObject.($object.path).get.responses."200".content.'application/json'.schema = [PSCustomObject]@{ '$ref' = "#/components/schemas/$($object.objectName)" }
+    $ComponentsSchemas[$object.objectName] = $object.objectSchema
 }
 
 # creating the components-object
@@ -238,8 +318,8 @@ $ComponentsObject = [PSCustomObject]@{
 # building open api schema 3.1.1
 # https://swagger.io/specification/#schema-1
 $OpenApiSchema = [PSCustomObject]@{
-    openapi = "3.1.1"
-    info    = [PSCustomObject]@{
+    openapi           = "3.1.1"
+    info              = [PSCustomObject]@{
         title          = "Proxmox VE Module 1.0"
         summary        = "Module to access Proxmox VE Api"
         description    = "Generated OpenApiDescription to render Modules via OpenapiGenerator"
@@ -256,8 +336,10 @@ $OpenApiSchema = [PSCustomObject]@{
         #}
     }
     jsonSchemaDialect = "https://spec.openapis.org/oas/3.1/dialect/base"
-    paths   = $OpenApiPathsObject
-    #components     = 
+    paths             = $OpenApiPathsObject
+    components        = [PSCustomObject]@{
+        schemas = [PSCustomObject]$ComponentsSchemas
+    }
     #tags
     #externalDocs
 }
