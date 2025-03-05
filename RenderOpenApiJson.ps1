@@ -116,17 +116,16 @@ function New-ObjectSchemaFromProperties() {
         $PropertiesSchema,
         [ValidateSet("array", "object")]
         [string]
-        $type = "object",
-        [switch]
-        $NonRecursive = $false
+        $type = "object"
     )
 
+    # create properties hashtable
+    $properties = @{}
     # loop PropertyName from Get-Member
     foreach ($PropertyName in ($PropertiesSchema | Get-Member -MemberType NoteProperty).Name) {
         # get Property from schema
         $Property = $PropertiesSchema.($PropertyName)
-        # create Hashtables
-        $properties = @{}
+        # creating a hashtable which we will add to the properties hashtable
         $AddObj = @{}
         # adding supported JSON schema keywords to openapi model
         # https://swagger.io/docs/specification/v3_0/data-models/keywords/
@@ -137,13 +136,41 @@ function New-ObjectSchemaFromProperties() {
                     $AddObj[$_] = $Property.($_)
                 }
             })
+
         $AddObj["type"] = $Property.type
+        # fixing lost types :)
+        if(!$Property.type){
+            if($Property.enum){
+                $Property | Add-Member -MemberType NoteProperty -Name "type" -Value "string"
+            }
+            # TODO: dirty hack, need to fix this
+            if($Property.description -eq "A list of errors when 'check_node' is given."){
+                $Property | Add-Member -MemberType NoteProperty -Name "type" -Value "array"
+            }
+            # TODO: dirty hack, need to fix this
+            if($Property.description -match "The name \(ID\) for the M(DS|GR)"){
+                $Property | Add-Member -MemberType NoteProperty -Name "type" -Value "string"
+            }
+        }
         switch ($Property.type) {
             # adding string parameter to object
-            { $_ -match "string|number|integer" } {
+            { $_ -eq "string" } {
+                if($Property.enum){
+                    $AddObj["enum"] = $Property.enum
+                }
                 $properties[$PropertyName] = ([PSCustomObject]$AddObj)
                 break
             }
+            # adding numbers and integer
+            { $_ -match "number|integer" } {
+                $properties[$PropertyName] = ([PSCustomObject]$AddObj)
+                break
+            }
+            # we need to transform the pve boolean into an integer,
+            # because proxmox boolean returns 1 or 0
+            # https://swagger.io/docs/specification/v3_0/data-models/data-types/#boolean
+            # "type: boolean represents two values: true and false. Note that truthy and 
+            # falsy values such as “true”, "", 0 or null are not considered boolean values."
             { $_ -eq "boolean" } {
                 $AddObj["type"] = "integer"
                 $AddObj["minimum"] = 0
@@ -153,9 +180,7 @@ function New-ObjectSchemaFromProperties() {
                 break
             }
             { $_ -match "array" } {
-                if ($Property.items) {
-                    $AddObj["items"] = (New-ObjectSchemaFromProperties -PropertiesSchema $Property.items -NonRecursive)
-                }
+                $AddObj["items"] = $Property.items
                 $properties[$PropertyName] = ([PSCustomObject]$AddObj)
                 break
             }
@@ -172,8 +197,8 @@ function New-ObjectSchemaFromProperties() {
             # adding boolean parameter to the object
             # we must define it as a integer 
             default {
-                Write-Warning ("Unhandled Property Type $($_) didn't add it to component object")
-                #$tmp.Add($Property)
+                Write-Warning ("Unhandled Property Type $($_) didn't add it to component object - $($NonRecursive)")
+                [void]$tmp.Add($PropertiesSchema)
             }
         }
     }
@@ -332,7 +357,6 @@ foreach ($Object in ($AllComponents | Sort-Object -Property path)) {
     $OpenApiPathsObject.($object.path).get.responses."200".content.'application/json'.schema = [PSCustomObject]@{ '$ref' = "#/components/schemas/$($object.objectName)" }
     $ComponentsSchemas[$object.objectName] = $Object.objectSchema
 }
-
 
 $ComponentsObject = [PSCustomObject]@{
     schemas = [PSCustomObject]$ComponentsSchemas
