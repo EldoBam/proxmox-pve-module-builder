@@ -92,16 +92,7 @@ function New-OpenApiPathItemObject() {
             summary     = $Schema.info.($Method).description
             operationId = $Schema.info.($Method).name
             parameter   = [array]$ParameterList
-            responses   = [PSCustomObject]@{
-                200 = [PSCustomObject]@{
-                    description = ""
-                    content     = [PSCustomObject]@{
-                        "application/json" = [PSCustomObject]@{
-                            schema = ""
-                        }
-                    }
-                }
-            }
+            responses   = ""
         }
     }
     # return the object while typecasting it to a PSCustomObject
@@ -139,23 +130,23 @@ function New-ObjectSchemaFromProperties() {
 
         $AddObj["type"] = $Property.type
         # fixing lost types :)
-        if(!$Property.type){
-            if($Property.enum){
+        if (!$Property.type) {
+            if ($Property.enum) {
                 $Property | Add-Member -MemberType NoteProperty -Name "type" -Value "string"
             }
             # TODO: dirty hack, need to fix this
-            if($Property.description -eq "A list of errors when 'check_node' is given."){
+            if ($Property.description -eq "A list of errors when 'check_node' is given.") {
                 $Property | Add-Member -MemberType NoteProperty -Name "type" -Value "array"
             }
             # TODO: dirty hack, need to fix this
-            if($Property.description -match "The name \(ID\) for the M(DS|GR)"){
+            if ($Property.description -match "The name \(ID\) for the M(DS|GR)") {
                 $Property | Add-Member -MemberType NoteProperty -Name "type" -Value "string"
             }
         }
         switch ($Property.type) {
             # adding string parameter to object
             { $_ -eq "string" } {
-                if($Property.enum){
+                if ($Property.enum) {
                     $AddObj["enum"] = $Property.enum
                 }
                 $properties[$PropertyName] = ([PSCustomObject]$AddObj)
@@ -325,14 +316,20 @@ foreach ($Method in $AllMethods.Where({ $_.method -eq "GET" -and $_.schema.retur
 # PS> ($AllMethods.schema.returns.type | Select -Unique) -join ", "  
 # array, null, string, object, boolean, integer, any
 # those are the return types to handle let's start with the objects, which have properties
-$AllGetObjects = [System.Collections.ArrayList]@()
+$AllObjects = [System.Collections.ArrayList]@()
 foreach ($Method in $AllMethods.Where({ $_.method -eq "GET" -and $_.schema.returns.type -eq "object" -and $_.schema.returns.properties })) {
+    if ($AllObject.Where({ $_.objectName -eq $Method.objectName }).Count) {
+        $objectName = "$($Method.ObjectName)-$($Method.method)"
+    }
+    else {
+        $objectName = $Method.objectName
+    }
     # adding new object to collection while calling  
-    [void]$AllGetObjects.Add([PSCustomObject]@{
+    [void]$AllObjects.Add([PSCustomObject]@{
             path         = $Method.path
             method       = $Method.method
             objectSchema = (New-ObjectSchemaFromProperties -PropertiesSchema $Method.schema.returns.properties)
-            objectName   = "$($Method.objectName)"
+            objectName   = $objectName
         })
 }
 
@@ -347,15 +344,60 @@ foreach ($Method in $AllMethods.Where({ $_.method -eq "GET" -and $_.schema.retur
         })
 }
 
+# putting all objects into one collection
 $AllComponents = [System.Collections.ArrayList]@()
-[void]$AllComponents.AddRange($AllGetObjects)
+[void]$AllComponents.AddRange($AllObjects)
 [void]$AllComponents.AddRange($AllGetArrays)
 
+# creating OpenApi component schema
+# and adding $ref to reponses to the according path objects
 $ComponentsSchemas = @{}
 foreach ($Object in ($AllComponents | Sort-Object -Property path)) {
-    $OpenApiPathsObject.($object.path).get.responses."200".description = $allSchemaPaths.Where({ $_.path -eq $object.path }).info.GET.description
-    $OpenApiPathsObject.($object.path).get.responses."200".content.'application/json'.schema = [PSCustomObject]@{ '$ref' = "#/components/schemas/$($object.objectName)" }
-    $ComponentsSchemas[$object.objectName] = $Object.objectSchema
+    switch ($Object.objectSchema.type) {
+        { $_ -eq "object" } {
+            $OpenApiPathsObject.($Object.path).($Object.method).responses = [PSCustomObject]@{
+                200 = [PSCustomObject]@{
+                    description = $allSchemaPaths.Where({ $_.path -eq $Object.path })[0].info.($Object.method).description
+                    content     = [PSCustomObject]@{
+                        "application/json" = [PSCustomObject]@{
+                            schema = [PSCustomObject]@{ '$ref' = "#/components/schemas/$($Object.objectName)" }
+                        }
+                    }
+                }
+            }
+            $ComponentsSchemas[$Object.objectName] = $Object.objectSchema
+            break
+        }
+        { $_ -eq "array" } {
+            if ($ComponentsSchemas[$object.objectName]) {
+                $ObjectName = "$($Object.objectName)-AV" # AV = array view
+            }
+            else {
+                $ObjectName = $Object.objectName
+            }
+            $OpenApiPathsObject.($Object.path).($Object.method).responses = [PSCustomObject]@{
+                200 = [PSCustomObject]@{
+                    description = $AllSchemaPaths.Where({ $_.path -eq $Object.path })[0].info.($Object.method).description
+                    content     = [PSCustomObject]@{
+                        "application/json" = [PSCustomObject]@{
+                            schema = [PSCustomObject]@{ '$ref' = "#/components/schemas/$($ObjectName)" }
+                        }
+                    }
+                }
+            }
+            $ComponentsSchemas[$ObjectName] = $Object.objectSchema
+            break
+        }
+    }
+}
+
+# handling return null
+foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "null" })) {
+    $OpenApiPathsObject.($Method.path).($Method.method).responses = [PSCustomObject]@{ 
+        200 = [PSCustomObject]@{
+            description = "ok"
+        }
+    }
 }
 
 $ComponentsObject = [PSCustomObject]@{
