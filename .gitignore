@@ -1,2 +1,2 @@
-bin/*
-output/
+bin/**
+output/** !output/proxmox_ve_api_oa*
