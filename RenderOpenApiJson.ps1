@@ -155,11 +155,6 @@ function New-ObjectSchemaFromProperties() {
             # adding numbers and integer
             { $_ -match "number|integer" } {
                 $properties[$PropertyName] = ([PSCustomObject]$AddObj)
-                # fixing description issues xD
-                # access/users/{userid}/token --> property expire [int] was 'same as user'
-                if($properties["default"] -and $properties["default"] -isnot [int]){
-                    $properties.Remove("default")
-                }
                 break
             }
             # we need to transform the pve boolean into an integer,
@@ -194,7 +189,6 @@ function New-ObjectSchemaFromProperties() {
             # we must define it as a integer 
             default {
                 Write-Warning ("Unhandled Property Type $($_) didn't add it to component object - $($NonRecursive)")
-                [void]$tmp.Add($PropertiesSchema)
             }
         }
     }
@@ -448,11 +442,11 @@ $OpenApiSchema = [PSCustomObject]@{
 }
 
 
+# damn it, need to do some cleanup afterwards until the generator is finished.
+$OpenApiSchema.components.schemas.AccessUsers.properties.tokens.properties.expire.PSObject.Properties.Remove("default")
+
+
 $OpenApiSchema | ConvertTo-Json -Depth 20 | Out-File -FilePath "$($PSScriptRoot)\output\proxmox_ve_api_oa_3.1.1.json" -Encoding utf8
-
-
-
-
 ## testing area
 
 # https://github.com/cloudbase/powershell-yaml

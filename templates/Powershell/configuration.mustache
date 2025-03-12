@@ -284,6 +284,7 @@ function Invoke-{{{apiNamePrefix}}}Login {
                 Write-Host $_.Exception.Message -ForegroundColor Red
                 return
             }
+        }
     }
     $Script:LoggedIn = $true
     if(!$Silent){
