@@ -78,7 +78,7 @@ function Initialize-PVEClusterFirewallOptions {
 		 $OBJ = @{}
 		foreach($parameter in   $PSBoundParameters.Keys){
 			#If Specifield map the Display name back
-			$OBJ.($DisplayNameMapping.($parameter)) = $PSBoundParameters.$parameter
+			$OBJ.($DisplayNameMapping.($parameter)) = "$PSBoundParameters.$parameter"
 		}
 
 		$PSO = [PSCustomObject]$OBJ

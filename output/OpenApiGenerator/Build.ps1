@@ -60,7 +60,7 @@ $Manifest = @{
     ModuleVersion = '0.1.2'
 
     RootModule = 'ProxmoxPVE.psm1'
-    Guid = '{F2C87855-1334-4044-AC7F-B0BAB157CD8D}' # Has to be static, otherwise each new build will be considered different module
+    Guid = '{3E298631-CA69-4EF4-A20D-40052233C254}' # Has to be static, otherwise each new build will be considered different module
 
     PowerShellVersion = '6.2'
 
