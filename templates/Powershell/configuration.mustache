@@ -231,7 +231,7 @@ function Invoke-{{{apiNamePrefix}}}Login {
         
     if($LoginMethod -eq "ticket"){
         try{
-            $LoginUri = "$Script:Configuration["BaseUrl"]/access/ticket"
+            $LoginUri = "$($Script:Configuration["BaseUrl"])/access/ticket"
             $crds = $Script:Configuration["Credential"]
             $LoginResponse = Invoke-WebRequest `
                                 -Uri $LoginUri `
