@@ -1,5 +1,5 @@
 ﻿$apiinput = "$($PSScriptRoot)\output\proxmox_ve_api_oa_3.1.1.json"
-$apioutput = "$($PSScriptRoot)\output\OpenApiGenerator"
+$apioutput = "$($PSScriptRoot)\..\pve-powershell-module"
 $jarpath = "$($PSScriptRoot)\bin\openapi-generator-cli-7.9.0.jar"
 $jdkPath = "$($PSScriptRoot)\bin\jdk-23.0.2\bin\java.exe"
 $templatepath = "$($PSScriptRoot)\templates\Powershell"
@@ -14,7 +14,6 @@ Start-Process -FilePath $jdkPath -ArgumentList "-jar $jarpath  generate -g power
 "$jdkPath -jar $jarpath generate -g powershell -i $apiinput -o $apioutput -t $templatepath --package-name ProxmoxPVE --additional-properties=discardReadOnly=true,apiNamePrefix=PVE --skip-validate-spec"
 "copied to clipboard"
 "---"
-
 
 
 
