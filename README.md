@@ -22,7 +22,7 @@ Once we have a working module, it will be published via [PS Gallery](https://www
 ## dependencies and exensions
 - [powershell-yaml](https://github.com/cloudbase/powershell-yaml) - neccessary if you want to copy the generated code into swaggereditor
 - [Todo Tree](https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.todo-tree) - VSCode extension to handle todos via comments
-- [openapi-generator-cli.jar] - https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/
+- [openapi-generator-cli.jar](https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/) OpenApi Generator as Java CLI
 - [Java JDK](https://www.oracle.com/de/java/technologies/downloads/) - needed to run openapi-generator-cli - need to test it with OpenJDK
 
 ## known issues
