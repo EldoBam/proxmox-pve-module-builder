@@ -60,9 +60,9 @@ function New-OpenApiPathItemObject() {
         summary = ($Schema.text -replace "{|}|_", "")
     }
 
-    # creating tag for this path, easily take the first art of the path. e.g.: /cluster/backup/{id}/included_volumes => cluster
-    # TODO: improve tag handling
-    $Tag = $Schema.path.Split('/')[1]
+    # creating tag for this path, easily take the first two parts of the path. e.g.: /cluster/backup/{id}/included_volumes => cluster,backup
+    # update on tags: tried to add a second tag, but nested grouping isn't supported for swagger
+    $Tag = @($Schema.path.Split('/')[1])
 
     # iteratiing through the methods and build the operation objects
     # https://swagger.io/specification/#operation-object
@@ -87,7 +87,7 @@ function New-OpenApiPathItemObject() {
 
         # add the current operation object to the path item object
         $PathItemObject[$Method.ToLower()] = [PSCustomObject]@{
-            tags        = @($Tag)
+            tags        = [array]$Tag
             description = $Schema.info.($Method).description
             summary     = $Schema.info.($Method).description
             operationId = $Schema.info.($Method).name
@@ -443,7 +443,7 @@ $OpenApiSchema = [PSCustomObject]@{
 }
 
 
-
+$OpenApiSchema | ConvertTo-Json -Depth 20 | Out-File -FilePath "$($PSScriptRoot)\output\proxmox_ve_api_oa_3.1.1.json" -Encoding utf8
 
 
 
@@ -454,4 +454,5 @@ $OpenApiSchema = [PSCustomObject]@{
 # copy schema as yaml to clipboard
 # https://editor-next.swagger.io/ <-- insert yaml from clipboard to swagger editor for development and testing :)
 $OpenApiSchema | ConvertTo-Yaml | Set-Clipboard
-$OpenApiSchema | ConvertTo-Yaml | Out-File -FilePath "$($PSScriptRoot)/proxmox_ve_api_oa_3.1.1.yaml"
+$OpenApiSchema | ConvertTo-Yaml | Out-File -FilePath "$($PSScriptRoot)\output\proxmox_ve_api_oa_3.1.1.yaml" -Encoding utf8
+
