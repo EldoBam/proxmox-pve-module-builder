@@ -155,6 +155,11 @@ function New-ObjectSchemaFromProperties() {
             # adding numbers and integer
             { $_ -match "number|integer" } {
                 $properties[$PropertyName] = ([PSCustomObject]$AddObj)
+                # fixing description issues xD
+                # access/users/{userid}/token --> property expire [int] was 'same as user'
+                if($properties["default"] -and $properties["default"] -isnot [int]){
+                    $properties.Remove("default")
+                }
                 break
             }
             # we need to transform the pve boolean into an integer,
