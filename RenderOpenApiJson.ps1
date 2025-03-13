@@ -284,7 +284,7 @@ foreach ($Path in $AllSchemaPaths) {
                     path       = $Path.path
                     method     = $Method
                     schema     = $Path.info.($Method)
-                    objectName = ($Path.info.GET.name -replace "^(get|set|new|remove)").Split("By")[0]
+                    objectName = ($Path.info.($Method).name -replace "^(get|set|new|remove)").Split("By")[0]
                 })
         }
     }
@@ -315,16 +315,18 @@ foreach ($Method in $AllMethods.Where({ $_.method -eq "GET" -and $_.schema.retur
 # PS> ($AllMethods.schema.returns.type | Select -Unique) -join ", "  
 # array, null, string, object, boolean, integer, any
 # those are the return types to handle let's start with the objects, which have properties
-$AllObjects = [System.Collections.ArrayList]@()
-foreach ($Method in $AllMethods.Where({ $_.method -eq "GET" -and $_.schema.returns.type -eq "object" -and $_.schema.returns.properties })) {
-    if ($AllObject.Where({ $_.objectName -eq $Method.objectName }).Count) {
+# putting all components into one collection
+$AllComponents = [System.Collections.ArrayList]@()
+
+foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "object" -and $_.schema.returns.properties })) {
+    if ($AllComponents.Where({ $_.objectName -eq $Method.objectName }).Count) {
         $objectName = "$($Method.ObjectName)-$($Method.method)"
     }
     else {
         $objectName = $Method.objectName
     }
     # adding new object to collection while calling  
-    [void]$AllObjects.Add([PSCustomObject]@{
+    [void]$AllComponents.Add([PSCustomObject]@{
             path         = $Method.path
             method       = $Method.method
             objectSchema = (New-ObjectSchemaFromProperties -PropertiesSchema $Method.schema.returns.properties)
@@ -333,30 +335,126 @@ foreach ($Method in $AllMethods.Where({ $_.method -eq "GET" -and $_.schema.retur
 }
 
 # next handle arrays
-$AllGetArrays = [System.Collections.ArrayList]@()
-foreach ($Method in $AllMethods.Where({ $_.method -eq "GET" -and $_.schema.returns.type -eq "array" -and $_.schema.returns.links.href -ne '{subdir}' -and $_.schema.returns.items.properties })) {
-    [void]$AllGetArrays.Add([PSCustomObject]@{
+foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "array" -and $_.schema.returns.links.href -ne '{subdir}' -and $_.schema.returns.items.properties })) {
+    if ($AllComponents.Where({ $_.objectName -eq $Method.objectName }).Count) {
+        $objectName = "$($Method.ObjectName)-$($Method.method)"
+    }
+    else {
+        $objectName = $Method.objectName
+    }
+    [void]$AllComponents.Add([PSCustomObject]@{
             path         = $Method.path
             method       = $Method.method
             objectSchema = (New-ObjectSchemaFromProperties -PropertiesSchema $Method.schema.returns.items.properties -type "array")
-            objectName   = "$($Method.objectName)"
+            objectName   = "$($objectName)"
         })
 }
 
-# putting all objects into one collection
-$AllComponents = [System.Collections.ArrayList]@()
-[void]$AllComponents.AddRange($AllObjects)
-[void]$AllComponents.AddRange($AllGetArrays)
+# strings
+foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "string" })) {
+    if ($AllComponents.Where({ $_.objectName -eq $Method.objectName }).Count) {
+        $objectName = "$($Method.ObjectName)-$($Method.method)"
+    }
+    else {
+        $objectName = $Method.objectName
+    }
+
+    [void]$AllComponents.Add([PSCustomObject]@{
+            path         = $Method.path
+            method       = $Method.method
+            objectSchema = [PSCustomObject]@{
+                type        = "string"
+                description = $Method.schema.returns.desciption
+            }
+            objectName   = $objectName
+        })
+}
+
+# booleans
+foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "boolean" })) {
+    if ($AllComponents.Where({ $_.objectName -eq $Method.objectName }).Count) {
+        $objectName = "$($Method.ObjectName)-$($Method.method)"
+    }
+    else {
+        $objectName = $Method.objectName
+    }
+
+    [void]$AllComponents.Add([PSCustomObject]@{
+            path         = $Method.path
+            method       = $Method.method
+            objectSchema = [PSCustomObject]@{
+                type        = "integer"
+                minimum     = 0
+                maximum     = 1
+                description = $Method.schema.returns.desciption
+            }
+            objectName   = $objectName
+        })
+}
+
+# integer
+foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "integer" })) {
+    if ($AllComponents.Where({ $_.objectName -eq $Method.objectName }).Count) {
+        $objectName = "$($Method.ObjectName)-$($Method.method)"
+    }
+    else {
+        $objectName = $Method.objectName
+    }
+
+    $objectSchema = @{
+        type = "integer"
+        desciption = $Method.schema.returns.desciption
+    }
+
+    if ($Method.schema.returns.minimum) {
+        $objectSchema["minimum"] = $objectSchema
+    }
+
+    if ($Method.schema.returns.maximum) {
+        $objectSchema["maximum"] = $objectSchema
+    }
+
+    [void]$AllComponents.Add([PSCustomObject]@{
+            path         = $Method.path
+            method       = $Method.method
+            objectSchema = [PSCustomObject]$objectSchema
+            objectName   = "$($objectName)"
+        })
+}
+
+# any :) there is exact one endpoint returning any.
+# The description says "Extract a file or directory (as zip archive) from a PBS backup."
+# Hopefully it will work as a string Ook!
+# https://swagger.io/docs/specification/v3_0/data-models/data-types/#files  <-- I'm not joking.
+foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "any" })) {
+    if ($AllComponents.Where({ $_.objectName -eq $Method.objectName }).Count) {
+        $objectName = "$($Method.ObjectName)-$($Method.method)"
+    }
+    else {
+        $objectName = $Method.objectName
+    }
+
+    [void]$AllComponents.Add([PSCustomObject]@{
+            path         = $Method.path
+            method       = $Method.method
+            objectSchema = [PSCustomObject]@{
+                type        = "string"
+                format = "binary"
+            }
+            objectName   = "$($objectName)"
+        })
+}
+
 
 # creating OpenApi component schema
 # and adding $ref to reponses to the according path objects
 $ComponentsSchemas = @{}
 foreach ($Object in ($AllComponents | Sort-Object -Property path)) {
     switch ($Object.objectSchema.type) {
-        { $_ -eq "object" } {
+        { $_ -match "object|string|integer" } {
             $OpenApiPathsObject.($Object.path).($Object.method).responses = [PSCustomObject]@{
                 200 = [PSCustomObject]@{
-                    description = $allSchemaPaths.Where({ $_.path -eq $Object.path })[0].info.($Object.method).description
+                    description = "OK"
                     content     = [PSCustomObject]@{
                         "application/json" = [PSCustomObject]@{
                             schema = [PSCustomObject]@{ '$ref' = "#/components/schemas/$($Object.objectName)" }
@@ -376,7 +474,7 @@ foreach ($Object in ($AllComponents | Sort-Object -Property path)) {
             }
             $OpenApiPathsObject.($Object.path).($Object.method).responses = [PSCustomObject]@{
                 200 = [PSCustomObject]@{
-                    description = $AllSchemaPaths.Where({ $_.path -eq $Object.path })[0].info.($Object.method).description
+                    description = "OK"
                     content     = [PSCustomObject]@{
                         "application/json" = [PSCustomObject]@{
                             schema = [PSCustomObject]@{ '$ref' = "#/components/schemas/$($ObjectName)" }
@@ -394,7 +492,7 @@ foreach ($Object in ($AllComponents | Sort-Object -Property path)) {
 foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "null" })) {
     $OpenApiPathsObject.($Method.path).($Method.method).responses = [PSCustomObject]@{ 
         200 = [PSCustomObject]@{
-            description = "ok"
+            description = "OK"
         }
     }
 }
