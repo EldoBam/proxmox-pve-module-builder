@@ -15986,7 +15986,6 @@ components:
                   optional: 1
                   type: string
                 expire:
-                  default: same as user
                   description: API token expiration date (seconds since epoch). '0' means no expiration date.
                   minimum: 0
                   optional: 1
@@ -17899,7 +17898,6 @@ components:
               optional: 1
               type: string
             expire:
-              default: same as user
               description: API token expiration date (seconds since epoch). '0' means no expiration date.
               minimum: 0
               optional: 1

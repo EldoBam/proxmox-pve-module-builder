@@ -582,7 +582,8 @@ $OpenApiSchema = [PSCustomObject]@{
 
 # damn it, need to do some cleanup afterwards until the generator is finished.
 $OpenApiSchema.components.schemas.AccessUsers.properties.tokens.properties.expire.PSObject.Properties.Remove("default")
-
+$OpenApiSchema.components.schemas.'AccessUsers-GET'.items.properties.tokens.items.properties.expire.PSObject.Properties.Remove("default")
+$OpenApiSchema.components.schemas.'AccessUsersToken-POST'.properties.info.properties.expire.PSObject.Properties.Remove("default")
 
 $OpenApiSchema | ConvertTo-Json -Depth 20 | Out-File -FilePath "$($PSScriptRoot)\output\proxmox_ve_api_oa_3.1.1.json" -Encoding utf8
 ## testing area
