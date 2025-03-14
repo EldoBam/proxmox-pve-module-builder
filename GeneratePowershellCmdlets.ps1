@@ -15,5 +15,6 @@ Start-Process -FilePath $jdkPath -ArgumentList "-jar $jarpath  generate -g power
 "copied to clipboard"
 "---"
 
-
+# copy license to directory
+Copy-Item "$($PSScriptRoot)\LICENSE" $apioutput
 
