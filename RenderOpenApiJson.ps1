@@ -85,15 +85,26 @@ function New-OpenApiPathItemObject() {
             }
         }
 
-        # add the current operation object to the path item object
-        $PathItemObject[$Method.ToLower()] = [PSCustomObject]@{
+        # create the current operation object to the path item object
+        $PathAddObj = @{
             tags        = [array]$Tag
             description = $Schema.info.($Method).description
             summary     = $Schema.info.($Method).description
             operationId = $Schema.info.($Method).name
-            parameter   = [array]$ParameterList
             responses   = ""
         }
+
+        # add parameter if there are some
+        if ($ParameterList) {
+            $PathAddObj["parameter"] = [array]$ParameterList
+        }
+
+        # add empty requestBody if parametercount is greater than path parameters, will fill them later on
+        if ($Schema.info.($Method).parameters.properties -and (Get-Member -MemberType NoteProperty -InputObject $Schema.info.($Method).parameters.properties).Count -gt $ParameterList.Count) {
+            $PathAddObj["requestBody"] = ""
+        }
+
+        $PathItemObject[$Method.ToLower()] = [PSCustomObject]$PathAddObj
     }
     # return the object while typecasting it to a PSCustomObject
     [PSCustomObject]$PathItemObject
@@ -320,63 +331,66 @@ $AllComponents = [System.Collections.ArrayList]@()
 
 foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "object" -and $_.schema.returns.properties })) {
     if ($AllComponents.Where({ $_.objectName -eq $Method.objectName }).Count) {
-        $objectName = "$($Method.ObjectName)-$($Method.method)"
+        $ObjectName = "$($Method.ObjectName)-$($Method.method)"
     }
     else {
-        $objectName = $Method.objectName
+        $ObjectName = $Method.objectName
     }
     # adding new object to collection while calling  
     [void]$AllComponents.Add([PSCustomObject]@{
             path         = $Method.path
             method       = $Method.method
             objectSchema = (New-ObjectSchemaFromProperties -PropertiesSchema $Method.schema.returns.properties)
-            objectName   = $objectName
+            objectName   = $ObjectName
         })
 }
 
 # next handle arrays
 foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "array" -and $_.schema.returns.links.href -ne '{subdir}' -and $_.schema.returns.items.properties })) {
     if ($AllComponents.Where({ $_.objectName -eq $Method.objectName }).Count) {
-        $objectName = "$($Method.ObjectName)-$($Method.method)"
+        $ObjectName = "$($Method.ObjectName)-$($Method.method)"
     }
     else {
-        $objectName = $Method.objectName
+        $ObjectName = $Method.objectName
     }
     [void]$AllComponents.Add([PSCustomObject]@{
             path         = $Method.path
             method       = $Method.method
             objectSchema = (New-ObjectSchemaFromProperties -PropertiesSchema $Method.schema.returns.items.properties -type "array")
-            objectName   = "$($objectName)"
+            objectName   = "$($ObjectName)"
         })
 }
 
 # strings
 foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "string" })) {
     if ($AllComponents.Where({ $_.objectName -eq $Method.objectName }).Count) {
-        $objectName = "$($Method.ObjectName)-$($Method.method)"
+        $ObjectName = "$($Method.ObjectName)-$($Method.method)"
     }
     else {
-        $objectName = $Method.objectName
+        $ObjectName = $Method.objectName
     }
 
+    $ObjectSchema = @{
+        type = "string"
+    }
+    if ($Method.schema.returns.desciption) {
+        $ObjectSchema["description"] = $Method.schema.returns.desciption
+    }
     [void]$AllComponents.Add([PSCustomObject]@{
             path         = $Method.path
             method       = $Method.method
-            objectSchema = [PSCustomObject]@{
-                type        = "string"
-                description = $Method.schema.returns.desciption
-            }
-            objectName   = $objectName
+            objectSchema = [PSCustomObject]$description
+            objectName   = $ObjectName
         })
 }
 
 # booleans
 foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "boolean" })) {
     if ($AllComponents.Where({ $_.objectName -eq $Method.objectName }).Count) {
-        $objectName = "$($Method.ObjectName)-$($Method.method)"
+        $ObjectName = "$($Method.ObjectName)-$($Method.method)"
     }
     else {
-        $objectName = $Method.objectName
+        $ObjectName = $Method.objectName
     }
 
     [void]$AllComponents.Add([PSCustomObject]@{
@@ -388,21 +402,21 @@ foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "boolean" }))
                 maximum     = 1
                 description = $Method.schema.returns.desciption
             }
-            objectName   = $objectName
+            objectName   = $ObjectName
         })
 }
 
 # integer
 foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "integer" })) {
     if ($AllComponents.Where({ $_.objectName -eq $Method.objectName }).Count) {
-        $objectName = "$($Method.ObjectName)-$($Method.method)"
+        $ObjectName = "$($Method.ObjectName)-$($Method.method)"
     }
     else {
-        $objectName = $Method.objectName
+        $ObjectName = $Method.objectName
     }
 
     $objectSchema = @{
-        type = "integer"
+        type       = "integer"
         desciption = $Method.schema.returns.desciption
     }
 
@@ -418,7 +432,7 @@ foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "integer" }))
             path         = $Method.path
             method       = $Method.method
             objectSchema = [PSCustomObject]$objectSchema
-            objectName   = "$($objectName)"
+            objectName   = "$($ObjectName)"
         })
 }
 
@@ -428,23 +442,22 @@ foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "integer" }))
 # https://swagger.io/docs/specification/v3_0/data-models/data-types/#files  <-- I'm not joking.
 foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "any" })) {
     if ($AllComponents.Where({ $_.objectName -eq $Method.objectName }).Count) {
-        $objectName = "$($Method.ObjectName)-$($Method.method)"
+        $ObjectName = "$($Method.ObjectName)-$($Method.method)"
     }
     else {
-        $objectName = $Method.objectName
+        $ObjectName = $Method.objectName
     }
 
     [void]$AllComponents.Add([PSCustomObject]@{
             path         = $Method.path
             method       = $Method.method
             objectSchema = [PSCustomObject]@{
-                type        = "string"
+                type   = "string"
                 format = "binary"
             }
-            objectName   = "$($objectName)"
+            objectName   = "$($ObjectName)"
         })
 }
-
 
 # creating OpenApi component schema
 # and adding $ref to reponses to the according path objects
@@ -495,6 +508,33 @@ foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "null" })) {
             description = "OK"
         }
     }
+}
+
+# now creating the requestbodies and add them to components and paths object
+foreach ($Method in $AllMethods.Where({ $_.schema.parameters.properties })) {
+    # skip if there are only path parameters
+    if (([regex]"\{").Matches($Method.path).Count -ge (Get-Member -InputObject $Method.schema.parameters.properties -MemberType NoteProperty).Count) {
+        continue
+    }
+    # a bit messy :) let's look afterwards if we can remove dpulicates
+    $ObjectName = "$($Method.method)-$($Method.objectName)-RB"
+    if ($AllComponents.Where({ $_.objectName -eq $ObjectName }).Count) {
+        $ComponentsSchemas[$ObjectName] = "$($Method.method)-$ObjectName"
+    }
+    $ComponentsSchemas[$ObjectName] = New-ObjectSchemaFromProperties -PropertiesSchema $Method.schema.parameters.properties
+    
+    $requestBodySchema = @{
+        content = [PSCustomObject]@{
+            "application/json" = [PSCustomObject]@{
+                schema = [PSCustomObject]@{ '$ref' = "#/components/schemas/$($ObjectName)" }
+            }
+        }
+    }
+    if ($Method.schema.description) {
+        $requestBodySchema["description"] = $Method.schema.description
+    }
+    $OpenApiPathsObject.($Method.path).($Method.method).requestBody = [PSCustomObject]$requestBodySchema
+    # TODO: check the required property
 }
 
 $ComponentsObject = [PSCustomObject]@{
