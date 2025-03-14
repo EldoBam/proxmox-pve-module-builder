@@ -80,6 +80,7 @@ function New-OpenApiPathItemObject() {
                             in          = "path"
                             description = $Schema.info.($Method).parameters.properties.($Parameter).description
                             required    = $true
+                            schema      = $Schema.info.($Method).parameters.properties.($Parameter)
                         })
                 }
             }
