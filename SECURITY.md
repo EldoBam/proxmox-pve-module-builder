@@ -9,5 +9,5 @@ Any sensitive data inside the generated module must be stored safely in encrypte
 
 ## Reporting a Vulnerability
 
-If you find a vulnerability please open an issue according the [Contributing Guideline][https://github.com/EldoBam/proxmox-pve-module-builder/blob/main/CONTRIBUTING.md]
+If you find a vulnerability please open an issue according the [Contributing Guideline](https://github.com/EldoBam/proxmox-pve-module-builder/blob/main/CONTRIBUTING.md)
 Vulnerability reporting is not enabled at this time.
