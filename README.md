@@ -2,6 +2,8 @@
 This project was born to create a Powershell Module to access the Proxmox PVE Api.
 The idea is to render an [OpenAPI v3 schema](https://swagger.io/specification/#schema) which can be used to render modules via the [OpenApi Generator](https://openapi-generator.tech/).
 
+This project currently contains the implementation of building powershell modules. Any contribution for build processes into other languages are welcome.
+
 # pve-powershell-module
 You can find the rendered Powershell Module and it's documentation here: [PVE PowerShell Module](https://github.com/EldoBam/pve-powershell-module)
 

@@ -17,4 +17,5 @@ Start-Process -FilePath $jdkPath -ArgumentList "-jar $jarpath  generate -g power
 
 # copy license to directory
 Copy-Item "$($PSScriptRoot)\LICENSE" $apioutput
+Copy-Item "$($PSScriptRoot)\CONTRIBUTING.md" $apioutput
 
