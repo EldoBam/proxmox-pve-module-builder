@@ -80,7 +80,7 @@ function New-OpenApiPathItemObject() {
                             in          = "path"
                             description = $Schema.info.($Method).parameters.properties.($Parameter).description
                             required    = $true
-                            schema      = $Schema.info.($Method).parameters.properties.($Parameter)
+                            schema      = ($Schema.info.($Method).parameters.properties.($Parameter) | Select-Object -Property type,format)
                         })
                 }
             }
@@ -97,7 +97,7 @@ function New-OpenApiPathItemObject() {
 
         # add parameter if there are some
         if ($ParameterList) {
-            $PathAddObj["parameter"] = [array]$ParameterList
+            $PathAddObj["parameters"] = [array]$ParameterList
         }
 
         # add empty requestBody if parametercount is greater than path parameters, will fill them later on
