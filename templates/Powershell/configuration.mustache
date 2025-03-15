@@ -2,6 +2,54 @@
 <#
 .SYNOPSIS
 
+Get the configuration object '{{{apiNamePrefix}}}Configuration' from file.
+
+.DESCRIPTION
+
+Get the configuration object '{{{apiNamePrefix}}}Configuration' from file.
+
+.OUTPUTS
+
+System.Collections.Hashtable
+#>
+function Get-{{{apiNamePrefix}}}ConfigurationFromFile{
+    if((Test-Path ($env:USERPROFILE + '\{{{apiNamePrefix}}}Settings.txt'))){
+        $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR((Get-Content ($env:USERPROFILE + '\{{{apiNamePrefix}}}Settings.txt') | ConvertTo-SecureString))
+        $Unsecure = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+        $FileConfig = $Unsecure | ConvertFrom-Json -AsHashtable
+        $Credential = New-Object System.Management.Automation.PSCredential($FileConfig["Credential"].UserName, (ConvertTo-SecureString $FileConfig["Credential"].Password))
+        $FileConfig["Credential"] = $Credential
+        return $FileConfig
+    }else{
+        return $false
+    }
+}
+<#
+.SYNOPSIS
+
+Initialize '{{{apiNamePrefix}}}'.
+
+.DESCRIPTION
+
+Loads an existing configuration if exists from current userprofile, performs login.
+
+.OUTPUTS
+
+boolean
+#>
+function Initialize-{{{apiNamePrefix}}}{
+    $FileConfig = Get-{{{apiNamePrefix}}}ConfigurationFromFile
+    if($FileConfig){
+        $Script:Configuration = $FileConfig
+        return Invoke-{{{apiNamePrefix}}}Login -Silent
+    }else{
+        Invoke-{{{apiNamePrefix}}}Login
+    }
+}
+
+<#
+.SYNOPSIS
+
 Get the configuration object '{{{apiNamePrefix}}}Configuration'.
 
 .DESCRIPTION
@@ -14,14 +62,9 @@ System.Collections.Hashtable
 #>
 function Get-{{{apiNamePrefix}}}Configuration{
 
-	if(($Script:Configuration.Count -eq 0) -and (Test-Path ($env:USERPROFILE + '\{{{apiNamePrefix}}}Settings.txt'))){
-			$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR((Get-Content ($env:USERPROFILE + '\{{{apiNamePrefix}}}Settings.txt') | ConvertTo-SecureString))
-			$Unsecure = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
-			$Script:Configuration = $Unsecure | ConvertFrom-Json -AsHashtable
-            $Credential = New-Object System.Management.Automation.PSCredential($Script:Configuration["Credential"].UserName, (ConvertTo-SecureString $Script:Configuration["Credential"].Password))
-			Invoke-{{{apiNamePrefix}}}Login -Silent
-		    return $Script:Configuration
-	}
+    if(($Script:Configuration.Count -eq 0) -and (Test-Path ($env:USERPROFILE + '\{{{apiNamePrefix}}}Settings.txt'))){
+        Initialize-{{{apiNamePrefix}}}
+    }
 
     $Configuration = $Script:Configuration
 
@@ -52,7 +95,7 @@ function Get-{{{apiNamePrefix}}}Configuration{
     if (!$Configuration.containsKey("Proxy")){
         $Configuration["Proxy"] = $null
     }
-	
+    
     Return $Configuration
 }
 
@@ -101,7 +144,7 @@ function Set-{{{apiNamePrefix}}}Configuration{
     [CmdletBinding()]
     Param(
         [string]$BaseUrl,
-		[PSCredential] $Credential,
+        [PSCredential] $Credential,
         [ValidateSet('token','ticket')]
         [string] $LoginMethod,
         [AllowEmptyString()]
@@ -144,11 +187,11 @@ function Set-{{{apiNamePrefix}}}Configuration{
         } else{
             $Script:Configuration['Proxy'] = $null
         }
-		if ($Persistent){
+        if ($Persistent){
             $SaveConfig = $Script:Configuration
             $SaveConfig["Credential"] = @{
                 UserName = $Script:Configuration["Credential"].UserName
-                Password = (ConvertFrom-SecureString -String $Script:Configuration["Credential"].Password)
+                Password = (ConvertFrom-SecureString -SecureString $Script:Configuration["Credential"].Password)
             }
             $SaveConfig | ConvertTo-Json -Compress | ConvertTo-SecureString -AsPlainText | ConvertFrom-SecureString  | set-content ($env:USERPROFILE + '\{{{apiNamePrefix}}}Settings.txt')
         }
@@ -220,6 +263,9 @@ function Invoke-{{{apiNamePrefix}}}Login {
                 }
             }
         }
+    }
+    if($Silent){
+        $UserChoice = "n"
     }
     if($UserChoice -eq "y"){
         switch($LoginMethod){
