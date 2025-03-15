@@ -6,9 +6,9 @@ info:
   termsOfService: ""
   contact:
     name: Timo Wolf
-    url: ""
-    email: ""
-  version: "0.2"
+    url: https://timo-wolf.de
+    email: amna.wolf@gmail.com
+  version: "0.3"
   licence:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
