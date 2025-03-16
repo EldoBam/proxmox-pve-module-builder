@@ -97,7 +97,7 @@ if((Invoke-PVELogin -Silent)){
 ## Basic Example to get started
 ```powershell
 Import-Module -Name '.\src\{{{packageName}}}\{{{packageName}}}.psm1' -Verbose
-Initialize-{{{apiNamePrefix}}}PVE
+Initialize-{{{apiNamePrefix}}}
 $nodes = Get-{{{apiNamePrefix}}}Nodes
 $nodes
 ```
