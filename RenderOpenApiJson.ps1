@@ -310,10 +310,10 @@ foreach ($Path in $AllSchemaPaths) {
 # we also don't have the object names from the api schema so we need to compare by properties
 
 <# just some code to do some research on $allProperties while coding
-$allProperties = [System.Collections.ArrayList]@()
+$AllProperties = [System.Collections.ArrayList]@()
 foreach ($Method in $AllMethods.Where({ $_.method -eq "GET" -and $_.schema.returns.type -eq "object" -and $_.schema.returns.properties })) {
     foreach($PropertyName in ($Method.schema.returns.properties | gm -MemberType NoteProperty).Name){
-        [void]$allProperties.Add([PSCustomObject]@{
+        [void]$AllProperties.Add([PSCustomObject]@{
             PropertyName = $PropertyName
             Property = $method.schema.returns.properties.($PropertyName)
             Path = $Method.path
