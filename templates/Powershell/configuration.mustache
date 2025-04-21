@@ -187,6 +187,11 @@ function Set-{{{apiNamePrefix}}}Configuration{
         } else{
             $Script:Configuration['Proxy'] = $null
         }
+
+        if($SkipCertificateCheck){
+            $Script:Configuration['SkipCertificateCheck'] = $true
+        }
+
         if ($Persistent){
             $SaveConfig = $Script:Configuration
             $SaveConfig["Credential"] = @{
@@ -295,6 +300,7 @@ function Invoke-{{{apiNamePrefix}}}Login {
                                     password = (DecryptSecureString -SecureString $crds.Password)
                                 } `
                                 -ContentType "application/x-www-form-urlencoded" `
+                                -SkipCertificateCheck:$Script:Configuration["SkipCertificateCheck"] `
                                 -ErrorAction Stop
             if($LoginResponse.StatusCode -eq 200){
                 $LoginData = $LoginResponse.Content | ConvertFrom-Json
@@ -324,7 +330,13 @@ function Invoke-{{{apiNamePrefix}}}Login {
             Authorization = ("PVEAPIToken {0}={1}" -f $Script:Configuration["Credential"].UserName,(DecryptSecureString -SecureString $Script:Configuration["Credential"].Password))
         }
         try{
-            $LoginResponse = Invoke-WebRequest -Uri $Script:Configuration["BaseUrl"] -Method Get -Headers $AuthHeaders
+            $LoginResponse = Invoke-WebRequest `
+                                -Uri $Script:Configuration["BaseUrl"] `
+                                -Method Get `
+                                -Headers $AuthHeaders `
+                                -SkipCertificateCheck:$Script:Configuration["SkipCertificateCheck"] `
+                                -ErrorAction Stop
+
             if($LoginResponse.StatusCode -eq 200){
                 $Script:AuthData["PVEAPIToken"] = (ConvertTo-SecureString -String $AuthHeaders.Authorization -AsPlainText -Force)
             }else{

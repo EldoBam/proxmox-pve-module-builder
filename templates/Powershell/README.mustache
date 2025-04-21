@@ -130,9 +130,23 @@ Set-{{{apiNamePrefix}}}Configuration -BaseUrl "https://pve.local:8006/api2/json"
 After you have stored the configuration once, you're now able to connect to the api by using following code at the beginning of your automation scripts.
 ```powershell
 Import-Module ProxmoxPVE
-Initialize-PVE
+Initialize-{{{apiNamePrefix}}}
 ```
 done.
+
+### SkipCertificateCheck
+To skip the check, you can enable the SkipCertificateCheck in the configuration, as seen in the example below:
+```powershell
+# insert your Proxmox Credentials according your login method
+$Credentials = Get-Credential
+$LoginMethod = "token"
+Set-{{{apiNamePrefix}}}Configuration -BaseUrl "https://pve.local:8006/api2/json" `
+                     -LoginMethod $LoginMethod `
+                     -Credential $Credentials `
+                     -SkipCertificateCheck `
+                     -Persistent
+Initialize-{{{apiNamePrefix}}}
+```
 
 ## Tests
 Tests are currently not implemented properly. I'm sad to tell, that they're currently useless.
