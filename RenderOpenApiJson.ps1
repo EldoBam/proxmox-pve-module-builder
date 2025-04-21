@@ -567,7 +567,7 @@ $OpenApiSchema = [PSCustomObject]@{
             url   = "https://timo-wolf.de"
             email = "amna.wolf@gmail.com"
         }
-        version        = "0.3"
+        version        = "0.5"
         licence        = [PSCustomObject]@{
             name = "Apache 2.0"
             url  = "http://www.apache.org/licenses/LICENSE-2.0.html"
