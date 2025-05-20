@@ -119,13 +119,13 @@ function Initialize-{{{apiNamePrefix}}}{{{classname}}} {
         {{/hasValidation}}
         {{/vars}}
 
-		 $DisplayNameMapping =@{
+		$DisplayNameMapping =@{
 			{{#allVars}}"{{{name}}}"="{{{baseName}}}"{{^-last}}; {{/-last}}{{/allVars}}
         }
 		
-		 $OBJ = @{}
+		$OBJ = @{}
 		foreach($parameter in   $PSBoundParameters.Keys){
-			#If Specifield map the Display name back
+			# If Specifield map the Display name back
 			$OBJ.($DisplayNameMapping.($parameter)) = $PSBoundParameters.$parameter
 		}
 
@@ -192,7 +192,7 @@ function Initialize-{{{apiNamePrefix}}}{{{classname}}} {
 		 $OBJ = @{}
 		foreach($parameter in   $PSBoundParameters.Keys){
 			#If Specifield map the Display name back
-			$OBJ.($DisplayNameMapping.($parameter)) = "$PSBoundParameters.$parameter"
+			$OBJ.($DisplayNameMapping.($parameter)) = $PSBoundParameters.$parameter
 		}
 
 		$PSO = [PSCustomObject]$OBJ
