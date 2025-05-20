@@ -20,3 +20,5 @@ Copy-Item "$($PSScriptRoot)\LICENSE" $apioutput
 Copy-Item "$($PSScriptRoot)\CONTRIBUTING.md" $apioutput
 Copy-Item "$($PSScriptRoot)\CODE_OF_CONDUCT.md" $apioutput
 Copy-Item "$($PSScriptRoot)\.github" $apioutput -Recurse
+New-Item -Path $apioutput -Name "examples"
+Copy-Item "$($PSScriptRoot)\*" "$($apioutput)\examples\"
