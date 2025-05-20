@@ -117,6 +117,8 @@ function New-ObjectSchemaFromProperties() {
     param (
         [PSCustomObject]
         $PropertiesSchema,
+        [array]
+        $SkipProperties = @(),
         [ValidateSet("array", "object")]
         [string]
         $type = "object"
@@ -126,6 +128,9 @@ function New-ObjectSchemaFromProperties() {
     $properties = @{}
     # loop PropertyName from Get-Member
     foreach ($PropertyName in ($PropertiesSchema | Get-Member -MemberType NoteProperty).Name) {
+        if($PropertyName -in $SkipProperties){
+            continue
+        }
         # get Property from schema
         $Property = $PropertiesSchema.($PropertyName)
         # creating a hashtable which we will add to the properties hashtable
@@ -175,10 +180,10 @@ function New-ObjectSchemaFromProperties() {
             # "type: boolean represents two values: true and false. Note that truthy and 
             # falsy values such as “true”, "", 0 or null are not considered boolean values."
             { $_ -eq "boolean" } {
-                $AddObj["type"] = "integer"
-                $AddObj["minimum"] = 0
-                $AddObj["maximum"] = 1
-                $AddObj["format"] = "int32"
+                $AddObj["type"] = "boolean"
+                #$AddObj["minimum"] = 0
+                #$AddObj["maximum"] = 1
+                #$AddObj["format"] = "int32"
                 $properties[$PropertyName] = ([PSCustomObject]$AddObj)
                 break
             }
@@ -231,6 +236,16 @@ function New-ObjectSchemaFromProperties() {
     }
 }
 
+# short function to extract the path parameters
+function Get-ParameterFromPath(){
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]
+        $Path
+    )
+    return ([regex]"\{([A-Za-z]{0,40})\}").Matches($Path).Groups.Value.Where({ $_ -notlike "{*" })
+}
 
 # putting all recursive paths into a flat list
 $AllSchemaPaths = [System.Collections.ArrayList]@()
@@ -337,11 +352,18 @@ foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "object" -and
     else {
         $ObjectName = $Method.objectName
     }
+    # need to remove the path parameter from the object in a DELETE request
+    # create var SkipParameter
+    $SkipProperties = @()
+    if($Method.method -eq "DELETE"){
+        $SkipProperties = Get-ParameterFromPath -Path $Method.path
+    }
+
     # adding new object to collection while calling  
     [void]$AllComponents.Add([PSCustomObject]@{
             path         = $Method.path
             method       = $Method.method
-            objectSchema = (New-ObjectSchemaFromProperties -PropertiesSchema $Method.schema.returns.properties)
+            objectSchema = (New-ObjectSchemaFromProperties -PropertiesSchema $Method.schema.returns.properties -SkipProperties $SkipProperties)
             objectName   = $ObjectName
         })
 }
@@ -354,10 +376,16 @@ foreach ($Method in $AllMethods.Where({ $_.schema.returns.type -eq "array" -and 
     else {
         $ObjectName = $Method.objectName
     }
+    # need to remove the path parameter from the object in a DELETE request
+    # create var SkipParameter
+    $SkipProperties = @()
+    if($Method.method -eq "DELETE"){
+        $SkipProperties = Get-ParameterFromPath -Path $Method.path
+    }
     [void]$AllComponents.Add([PSCustomObject]@{
             path         = $Method.path
             method       = $Method.method
-            objectSchema = (New-ObjectSchemaFromProperties -PropertiesSchema $Method.schema.returns.items.properties -type "array")
+            objectSchema = (New-ObjectSchemaFromProperties -PropertiesSchema $Method.schema.returns.items.properties -type "array" -SkipProperties $SkipProperties)
             objectName   = "$($ObjectName)"
         })
 }
@@ -517,12 +545,13 @@ foreach ($Method in $AllMethods.Where({ $_.schema.parameters.properties })) {
     if (([regex]"\{").Matches($Method.path).Count -ge (Get-Member -InputObject $Method.schema.parameters.properties -MemberType NoteProperty).Count) {
         continue
     }
+
     # a bit messy :) let's look afterwards if we can remove dpulicates
     $ObjectName = "$($Method.method)-$($Method.objectName)-RB"
     if ($AllComponents.Where({ $_.objectName -eq $ObjectName }).Count) {
         $ComponentsSchemas[$ObjectName] = "$($Method.method)-$ObjectName"
     }
-    $ComponentsSchemas[$ObjectName] = New-ObjectSchemaFromProperties -PropertiesSchema $Method.schema.parameters.properties
+    $ComponentsSchemas[$ObjectName] = New-ObjectSchemaFromProperties -PropertiesSchema $Method.schema.parameters.properties -SkipProperties (Get-ParameterFromPath -Path $Method.path)
     
     $requestBodySchema = @{
         content = [PSCustomObject]@{
