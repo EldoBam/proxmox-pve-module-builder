@@ -1,13 +1,20 @@
 <#
  # Render Proxmox VE OpenApi Description
  # A short PowerShell script to generate OpenApi description for Module creation via OpenApi Generator
- # @autor: Timo Wolf <amna.wolf@gmail.com>
- # @version: 0.1
+ # @autor: Timo Wolf <mail@timo-wolf.de>
+ # @version: 0.7
  #>
 
 # call apidoc.js from proxmox, the apidoc.js contains the schema of the api
 # this is the point to start at :)
 $ApiDescriptionJs = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/proxmox/pve-docs/refs/heads/master/api-viewer/apidata.js" -ContentType "text/javascript"
+
+# call the changelog for the PVE version the docs have been created for
+$ApiChangeLog = Invoke-WebRequest -Uri "https://github.com/proxmox/pve-docs/raw/refs/heads/master/debian/changelog"
+# get the pve version from the first line starting with "pve-docs" an split the hell out out of the rest of the sting to get the version
+# pve-docs (8.4.0) bookworm; urgency=medium
+
+$PVEVersion = $ApiChangeLog.RawContent.Split([System.Environment]::NewLine).Where({ $_ -like "pve-docs*" })[0].Split("(")[1].Split(")")[0]
 
 # damn dirty things :) let's get the json content from variable declaration
 $ApiSchema = $ApiDescriptionJs.Content[18..($ApiDescriptionJs.Content.Length - 4)] -join '' | ConvertFrom-Json
@@ -580,23 +587,21 @@ $ComponentsObject = [PSCustomObject]@{
     #pathItems =
 }
 
-
-
 # building open api schema 3.1.1
 # https://swagger.io/specification/#schema-1
 $OpenApiSchema = [PSCustomObject]@{
     openapi           = "3.1.1"
     info              = [PSCustomObject]@{
-        title          = "Proxmox VE"
-        summary        = "Module to access Proxmox VE Api"
-        description    = "Generated module to access all Proxmox VE Api Endpoints"
+        title          = "Proxmox PowerShell VE"
+        summary        = "Module to manage proxmox instances via api"
+        description    = "Generated module to access all Proxmox VE Api Endpoints. This module has been generated from the proxmox api description v. $PVEVersion"
         termsOfService = ""
         contact        = [PSCustomObject]@{
             name  = "Timo Wolf"
             url   = "https://timo-wolf.de"
-            email = "amna.wolf@gmail.com"
+            email = "mail@timo-wolf.de"
         }
-        version        = "0.6"
+        version        = $PVEVersion
         licence        = [PSCustomObject]@{
             name = "Apache 2.0"
             url  = "http://www.apache.org/licenses/LICENSE-2.0.html"
