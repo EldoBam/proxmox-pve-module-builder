@@ -14,7 +14,7 @@ $ApiChangeLog = Invoke-WebRequest -Uri "https://github.com/proxmox/pve-docs/raw/
 # get the pve version from the first line starting with "pve-docs" an split the hell out out of the rest of the sting to get the version
 # pve-docs (8.4.0) bookworm; urgency=medium
 
-$PVEVersion = $ApiChangeLog.RawContent.Split([System.Environment]::NewLine).Where({ $_ -like "pve-docs*" })[0].Split("(")[1].Split(")")[0]
+$PVEVersion = $ApiChangeLog.Content.Split("`n`n").Where({ $_.StartsWith('pve-docs') })[0].Split("(")[1].Split(")")[0]
 
 # damn dirty things :) let's get the json content from variable declaration
 $ApiSchema = $ApiDescriptionJs.Content[18..($ApiDescriptionJs.Content.Length - 4)] -join '' | ConvertFrom-Json
